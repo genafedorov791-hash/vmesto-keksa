@@ -1,18 +1,20 @@
 :root {
-  --pine: #21372e;
+  --cover-ink: #17221b;
+  --olive: #39483b;
+  --pine: #26392f;
+  --sage: #9b9e84;
+  --sand: #d6c4a5;
+  --linen: #e8dcc6;
   --milk: #f0e8d9;
-  --terracotta: #a65438;
-  --graphite: #29241f;
-  --brass: #b49a69;
-  --walnut: #493329;
-  --paper: #f7f2e8;
-  --earth-text: #86412c;
-  --line-light: #d0c5b2;
-  --line-dark: #647568;
-  --closing-ink: #202c24;
-  --form-surface: #2a382e;
-  --sage-bridge: #96947d;
-  --sand-mat: #e2d6c1;
+  --brass: #a08c70;
+  --graphite: #28251f;
+  --earth-text: #613526;
+  --line-light: rgb(100 76 53 / 35%);
+  --line-dark: rgb(214 196 165 / 38%);
+  --intro-sand: #dac8ac;
+  --breakfast-linen: #e1d2b9;
+  --booking-olive: #29372d;
+  --control-ease: 220ms ease;
   --font-display: "Cormorant Garamond", "Times New Roman", serif;
   --font-body: "Golos Text", Arial, sans-serif;
   --gutter: clamp(1.25rem, 5vw, 5rem);
@@ -31,7 +33,7 @@ html {
 body {
   margin: 0;
   color: var(--graphite);
-  background: var(--closing-ink);
+  background: var(--cover-ink);
   font: 400 1rem/1.55 var(--font-body);
   padding-block-end: var(--dock-height);
 }
@@ -121,35 +123,29 @@ section[tabindex]:focus, main[tabindex]:focus, footer[tabindex]:focus {
   gap: 0.5rem;
   min-block-size: 3.5rem;
   padding: 0.65rem 1.35rem;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor var(--button-outline, 84%), transparent);
+  border-radius: 999px;
+  background-color: transparent;
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.3;
   text-align: center;
-  transition: background-color 240ms, color 240ms, border-color 240ms;
+  transition: background-color var(--control-ease), border-color var(--control-ease);
 }
 
-.button--light {
-  color: var(--pine);
-  background: var(--milk);
-  border-color: var(--milk);
+.button--light { color: var(--milk); }
+.button--dark { color: var(--pine); }
+
+.button--quiet {
+  --button-outline: 62%;
+  min-block-size: 3rem;
+  font-weight: 450;
 }
 
-.button--dark {
-  color: var(--milk);
-  background: var(--pine);
-  border-color: var(--pine);
+.button:is(:hover, :focus-visible) {
+  border-color: currentColor;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
-
-.button--dark:hover {
-  color: var(--pine);
-  background: var(--milk);
-}
-
-.button--light:focus-visible { outline-color: var(--milk); }
-
-.button--dark:focus-visible { outline-color: var(--pine); }
 
 .plain-action, .text-link {
   padding: 0;
@@ -253,23 +249,22 @@ figcaption, .picture-note {
   to { transform: translateY(0); }
 }
 
-.introduction, .gastronomy, .breakfast, .atmosphere { background: var(--milk); }
+.introduction {
+  background-color: var(--intro-sand);
+  background-image: linear-gradient(180deg, var(--linen), var(--intro-sand) 90%);
+}
 
 .site-frame--cinema .introduction {
-  position: relative;
-  padding-block-start: clamp(1.1rem, 2.15vw, 1.9rem);
+  padding-block-start: clamp(1.4rem, 2.45vw, 2.25rem);
+  background-image: linear-gradient(180deg,
+    var(--cover-ink),
+    var(--olive) 20%,
+    var(--sage) 49%,
+    var(--intro-sand) 96%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% clamp(15rem, 29vw, 27rem);
 }
-
-.site-frame--cinema .introduction::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: clamp(7rem, 10vw, 9rem);
-  background: linear-gradient(180deg, var(--cover-ink), #575e4a 29%, var(--sage-bridge) 56%, var(--sand-mat) 90%, var(--milk));
-  pointer-events: none;
-}
-
-.site-frame--cinema .intro-grid { position: relative; }
 
 .site-frame--cinema .intro-room {
   grid-area: 1 / 7 / 3 / -1;
@@ -335,7 +330,17 @@ figcaption, .picture-note {
   margin-block-end: 1.1rem;
 }
 
-.gastronomy { padding-block-start: 0; }
+.gastronomy {
+  padding-block-start: 0;
+  background-color: var(--linen);
+  background-image: linear-gradient(180deg,
+    var(--intro-sand),
+    var(--linen) 16%,
+    #efe4d2 38%,
+    var(--linen) 75%,
+    var(--breakfast-linen)
+  );
+}
 
 .gastronomy-heading {
   display: flex;
@@ -352,7 +357,7 @@ figcaption, .picture-note {
 
 .preview-note {
   max-width: 24rem;
-  border-inline-start: 1px solid var(--terracotta);
+  border-inline-start: 1px solid var(--brass);
   padding-inline-start: 1rem;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -361,15 +366,20 @@ figcaption, .picture-note {
 .dish-grid { align-items: start; }
 .dish-item { min-width: 0; }
 
-.dish-item:nth-child(1) { grid-area: 1 / 1 / 3 / 7; }
-.dish-item:nth-child(2) { grid-area: 1 / 8 / 2 / -1; }
+.dish-item:nth-child(1) { grid-area: 1 / 1 / 3 / 8; }
+.dish-item:nth-child(2) {
+  grid-area: 1 / 8 / 2 / -1;
+  margin-block-start: clamp(1rem, 3vw, 2.6rem);
+}
 
 .dish-item:nth-child(3) { grid-area: 2 / 8 / 3 / 11; }
 .dish-item:nth-child(4) { grid-area: 2 / 11 / 3 / -1; margin-block-start: 2.35rem; }
 
 .dish-photo { aspect-ratio: 1.19; }
-.dish-photo img { filter: saturate(0.93); }
-.dish-item:nth-child(1) .dish-photo { aspect-ratio: 1.18; }
+.dish-item:nth-child(1) .dish-photo {
+  aspect-ratio: 1.32;
+  box-shadow: 0 0.35rem 0 color-mix(in srgb, var(--brass) 44%, var(--linen));
+}
 .dish-item:nth-child(2) .dish-photo { aspect-ratio: 0.99; }
 .dish-item:nth-child(3) .dish-photo { aspect-ratio: 1.16; }
 .dish-item:nth-child(4) .dish-photo { aspect-ratio: 0.91; }
@@ -465,7 +475,11 @@ figcaption, .picture-note {
 
 .preview-menu__price, .dish-dialog-status { color: var(--earth-text); }
 
-.breakfast { padding-block-start: 0; }
+.breakfast {
+  padding-block-start: 0;
+  background-color: var(--breakfast-linen);
+  background-image: linear-gradient(180deg, var(--breakfast-linen) 12%, var(--sand));
+}
 
 .breakfast-grid {
   position: relative;
@@ -492,13 +506,13 @@ figcaption, .picture-note {
   position: absolute;
   z-index: -1;
   inset: clamp(2rem, 6vw, 5.5rem) -0.85rem -0.7rem 2rem;
-  background: var(--sand-mat);
+  background: color-mix(in srgb, var(--sand) 75%, var(--brass));
 }
 .breakfast-photo .photo { aspect-ratio: 1.59; }
 .breakfast-photo figcaption { color: var(--earth-text); }
 
 .breakfast-copy { grid-column: 9 / -1; }
-.breakfast-copy .text-link { margin-block-start: 0.45rem; }
+.breakfast-copy .button { margin-block-start: 0.9rem; }
 
 .breakfast-hours {
   margin-block-start: 0.9rem;
@@ -507,6 +521,8 @@ figcaption, .picture-note {
 }
 
 .breakfast-hours span { font-size: 0.8125rem; font-weight: 400; }
+
+.atmosphere { background: var(--sand); }
 
 .atmosphere-heading {
   display: flex;
@@ -521,25 +537,19 @@ figcaption, .picture-note {
 .atmosphere-heading :is(.eyebrow, .picture-note) { color: var(--earth-text); }
 .atmosphere-heading em { color: var(--pine); }
 
-.atmosphere-gallery, .booking, .contacts {
-  background: var(--closing-ink);
-  color: var(--milk);
-}
+.atmosphere-gallery, .booking, .contacts { color: var(--milk); }
 
 .atmosphere-gallery {
-  position: relative;
-  isolation: isolate;
   padding-block-end: clamp(2.75rem, 5vw, 4.5rem);
-}
-
-.atmosphere-gallery::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0 0 auto;
-  height: clamp(7.5rem, 16vw, 14rem);
-  background: linear-gradient(180deg, var(--milk), var(--sage-bridge) 26%, #56624e 59%, var(--closing-ink));
-  pointer-events: none;
+  background-color: var(--olive);
+  background-image: linear-gradient(180deg,
+    var(--sand),
+    var(--sage) 25%,
+    #67745f 47%,
+    var(--olive) 86%
+  );
+  background-size: 100% clamp(13rem, 25vw, 22rem);
+  background-repeat: no-repeat;
 }
 
 .gallery-grid {
@@ -576,13 +586,17 @@ figcaption, .picture-note {
 
 .event-link {
   margin-block-start: clamp(1.55rem, 4.6vw, 3.7rem);
-  padding-block-start: 0.4rem;
+  padding-block-start: 0.95rem;
   border-block-start: 1px solid var(--line-dark);
 }
 
-.booking { padding-block-start: clamp(1.6rem, 4.6vw, 4.3rem); }
+.booking {
+  padding-block-start: clamp(1.6rem, 4.6vw, 4.3rem);
+  background-color: var(--booking-olive);
+  background-image: linear-gradient(180deg, var(--olive), var(--booking-olive));
+}
 
-.booking-copy .eyebrow, .contacts-copy .eyebrow { color: var(--brass); }
+.booking-copy .eyebrow, .contacts-copy .eyebrow { color: var(--sand); }
 .booking-grid { align-items: start; }
 .booking-copy { grid-column: 1 / 6; }
 .booking-copy h2 { line-height: 1.02; }
@@ -591,11 +605,16 @@ figcaption, .picture-note {
   grid-column: 7 / -1;
   min-width: 0;
   padding: clamp(1.15rem, 3.1vw, 2.7rem);
-  border-block-start: 1px solid var(--brass);
-  background: var(--form-surface);
+  border: 1px solid var(--line-dark);
+  border-block-start-color: var(--brass);
+  background-color: color-mix(in srgb, var(--cover-ink) 43%, transparent);
 }
 
-.contacts { padding-block: 0 1.6rem; }
+.contacts {
+  padding-block: 0 1.6rem;
+  background-color: var(--cover-ink);
+  background-image: linear-gradient(180deg, var(--booking-olive), var(--cover-ink));
+}
 
 .contacts-grid {
   padding-block-start: clamp(2.7rem, 5.3vw, 4.8rem);
@@ -638,7 +657,7 @@ figcaption, .picture-note {
   border-block-end: 1px solid var(--line-dark);
 }
 
-.contact-details dt { color: var(--brass); }
+.contact-details dt { color: var(--sand); }
 .contact-details dd { padding-block: 0.4rem; }
 .contact-details dd:has(.text-link) { padding: 0; }
 
@@ -667,13 +686,13 @@ figcaption, .picture-note {
   margin: auto;
   padding: clamp(1.25rem, 4.5vw, 2.5rem);
   color: var(--graphite);
-  background: var(--milk);
+  background: var(--linen);
   border: 1px solid var(--line-light);
 }
 
-.prototype-dialog::backdrop { background: rgb(24 34 29 / 78%); }
+.prototype-dialog::backdrop { background: color-mix(in srgb, var(--cover-ink) 79%, transparent); }
 
-.prototype-dialog[open] { animation: dialog-reveal 230ms ease-out; }
+.prototype-dialog[open] { animation: dialog-reveal var(--control-ease); }
 
 @keyframes dialog-reveal {
   from { opacity: 0; transform: translateY(0.5rem); }
@@ -696,8 +715,16 @@ figcaption, .picture-note {
   place-items: center;
   min-block-size: 2.75rem;
   padding: 0;
+  color: var(--pine);
   background: transparent;
-  border: 1px solid var(--line-light);
+  border: 1px solid color-mix(in srgb, currentColor 62%, transparent);
+  border-radius: 50%;
+  transition: background-color var(--control-ease), border-color var(--control-ease);
+}
+
+.dialog-close:is(:hover, :focus-visible) {
+  border-color: currentColor;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
 }
 
 .dialog-close span {
@@ -793,10 +820,9 @@ figcaption, .picture-note {
   .gastronomy-heading { align-items: start; }
   .dish-grid { row-gap: 1.55rem; }
   .dish-item:nth-child(1) { grid-area: 1 / 1 / 2 / -1; }
-  .dish-item:nth-child(2) { grid-area: 2 / 1 / 3 / -1; }
+  .dish-item:nth-child(2) { grid-area: 2 / 1 / 3 / -1; margin-block-start: 0; }
   .dish-item:nth-child(3) { grid-area: 3 / 1 / 4 / 2; }
   .dish-item:nth-child(4) { grid-area: 3 / 2 / 4 / -1; margin-block-start: 2.15rem; }
-  .dish-item:nth-child(1) .dish-photo { aspect-ratio: 1.32; }
   .dish-item:nth-child(2) .dish-photo { aspect-ratio: 0.95; }
   .dish-item:nth-child(3) .dish-photo { aspect-ratio: 0.88; }
   .dish-item:nth-child(4) .dish-photo { aspect-ratio: 1.13; }

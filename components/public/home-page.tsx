@@ -94,7 +94,7 @@ function Breakfast() {
           <h2 id="breakfast-title">Начать день<br /><em>за столом</em></h2>
           <p className="section-copy">Скрэмбл с креветками, картофельной роти и кремом из авокадо.</p>
           <p className="breakfast-hours">{directory.breakfastHours} <span>· по данным edagda, уточняется</span></p>
-          <PreviewDialog title="Меню завтраков" className="text-link" trigger="Смотреть завтраки">
+          <PreviewDialog title="Меню завтраков" className="button button--dark button--arrow button--quiet" trigger={<><span>Смотреть завтраки</span><ActionArrow /></>}>
             <p>В edagda упоминаются скрэмбл с креветками, полента со шпинатом и страчателлой и рисовая каша с клубникой на кокосовом молоке.</p>
             <p>Демонстрационная подборка. Точные часы подачи, состав, цены и наличие уточняются.</p>
           </PreviewDialog>
@@ -120,7 +120,7 @@ function Atmosphere() {
         <div className="container">
           <AtmosphereGallery />
           <div className="event-link">
-            <PreviewDialog title="Мероприятия" className="text-link" trigger="Обсудить мероприятие">
+            <PreviewDialog title="Мероприятия" className="button button--light button--arrow button--quiet" trigger={<><span>Обсудить мероприятие</span><ActionArrow /></>}>
               <p>Демонстрационный раздел. Контакты для обсуждения мероприятий появятся после согласования.</p>
             </PreviewDialog>
           </div>

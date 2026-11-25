@@ -6,7 +6,7 @@ import { photos } from "../components/public/photo-assets";
 import { dishPrice } from "../components/public/site-content";
 import { syntheticPricePreview } from "./fixtures/synthetic-prices";
 
-const reviewDirectory = join("docs", "review", "01-homepage-lettering");
+const reviewDirectory = join("docs", "review", "01-homepage-art-direction");
 const fullPageByteLimit = 700_000;
 const requiredViewports = [
   { width: 1440, height: 900 },
@@ -145,6 +145,14 @@ for (const { path, style, label, viewports } of covers) {
       const menuCTA = page.locator(".hero a[href='#menu']");
       const heroPhoto = page.locator(".hero-photo img");
       await expect(menuCTA).toBeInViewport();
+      for (const cta of [bookingCTA, menuCTA]) {
+        await expect(cta).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        await expect(cta).toHaveCSS("border-top-left-radius", "999px");
+        await expect(cta).toHaveCSS("border-top-width", "1px");
+      }
+      const menuTarget = await menuCTA.boundingBox();
+      expect(menuTarget?.height).toBeGreaterThanOrEqual(44);
+      expect(menuTarget?.height).toBeLessThan(54);
       await expect(heroPhoto).toBeInViewport({ ratio: 0.6 });
       const dock = await page.locator(".mobile-dock").boundingBox();
       if (dock) {
@@ -197,22 +205,16 @@ for (const { path, style, label, viewports } of covers) {
         "href",
         "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
       );
-      const sectionColors = await page.locator(
-        "#about, #menu, #breakfast, #atmosphere, .atmosphere-gallery, #booking, #contacts",
-      ).evaluateAll((sections) => sections.map((section) => getComputedStyle(section).backgroundColor));
-      const [paper, menu, breakfast, atmosphere, gallery, booking, contactsColor] = sectionColors;
-      expect([menu, breakfast, atmosphere]).toEqual([paper, paper, paper]);
-      expect([booking, contactsColor]).toEqual([gallery, gallery]);
-      expect(paper).not.toEqual(gallery);
-      if (style === "editorial") {
-        await expect(page.locator(".hero")).toHaveCSS("background-color", paper);
-      }
+
       await expectHomepagePhotosLoaded(page);
 
-      if (style === "cinema" && viewport.width !== 768) {
+      const captureCover = style === "cinema"
+        ? viewport.width !== 768
+        : viewport.width === 1440 || viewport.width === 390;
+      if (captureCover) {
         const size = `${viewport.width}x${viewport.height}`;
-        await capture(page, `hero-a-${size}`);
-        await capture(page, `home-a-${size}`, true);
+        await capture(page, `hero-${label.toLowerCase()}-${size}`);
+        await capture(page, `home-${label.toLowerCase()}-${size}`, true);
       }
       expect(pageErrors).toEqual([]);
       expect(failedResponses).toEqual([]);

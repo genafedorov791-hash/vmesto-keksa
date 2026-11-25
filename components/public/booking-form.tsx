@@ -141,7 +141,7 @@ export function BookingForm() {
             </div>
           </div>
           <div className={styles.actions}>
-            <button className={styles.primary} onClick={goToSeat} type="button">Далее</button>
+            <button className="button button--light" onClick={goToSeat} type="button">Далее</button>
           </div>
         </>
       )}
@@ -162,7 +162,7 @@ export function BookingForm() {
           <div className={styles.actions}>
             <button className={styles.secondary} onClick={() => goTo(0)} type="button">Назад</button>
             <button className={styles.secondary} onClick={() => { setSeat(""); goTo(2); }} type="button">Пропустить</button>
-            <button className={styles.primary} onClick={() => goTo(2)} type="button">Далее</button>
+            <button className="button button--light" onClick={() => goTo(2)} type="button">Далее</button>
           </div>
         </>
       )}
@@ -244,7 +244,7 @@ export function BookingForm() {
           {renderError("consent")}
           <div className={styles.actions}>
             <button className={styles.secondary} onClick={() => goTo(1)} type="button">Назад</button>
-            <button className={styles.primary} onClick={finish} type="button">Завершить демонстрацию</button>
+            <button className="button button--light" onClick={finish} type="button">Завершить демонстрацию</button>
           </div>
         </>
       )}
@@ -255,7 +255,7 @@ export function BookingForm() {
           <p className={styles.hint}>Запрос не отправлен. В рабочей версии заявка будет ожидать подтверждения сотрудником.</p>
           <div className={styles.actions}>
             <button
-              className={styles.primary}
+              className="button button--light"
               onClick={() => { setVisit(initialVisit); setSeat(""); goTo(0); }}
               type="button"
             >

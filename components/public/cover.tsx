@@ -32,6 +32,7 @@ export function SiteHeader() {
 
 export function Hero({ variant }: { variant: CoverVariant }) {
   const isCinema = variant === "cinema";
+  const actionTone = isCinema ? "button--light" : "button--dark";
 
   return (
     <section className={`hero hero--${variant}`} aria-labelledby="hero-title">
@@ -57,10 +58,10 @@ export function Hero({ variant }: { variant: CoverVariant }) {
           <div className="hero-copy">
             <p className="hero-description">От первого кофе до ужина, за которым хочется задержаться.</p>
             <div className="hero-actions">
-              <a href="#booking" className={`button button--arrow ${isCinema ? "button--light" : "button--dark"}`}>
+              <a href="#booking" className={`button button--arrow ${actionTone}`}>
                 <span>Забронировать столик</span><ActionArrow />
               </a>
-              <a href="#menu" className="cover-text-link">
+              <a href="#menu" className={`button button--arrow button--quiet ${actionTone}`}>
                 <span>Смотреть меню</span><ActionArrow />
               </a>
             </div>

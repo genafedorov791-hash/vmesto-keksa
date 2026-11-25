@@ -189,7 +189,6 @@
   margin-block-start: 1.15rem;
 }
 
-.primary,
 .secondary,
 .sample {
   min-block-size: 2.75rem;
@@ -206,15 +205,6 @@
   cursor: pointer;
 }
 
-.primary {
-  min-block-size: 3.5rem;
-  padding-inline: 1.25rem;
-  border-color: var(--milk);
-  background: var(--milk);
-  color: var(--closing-ink);
-  transition: background-color 220ms ease, border-color 220ms ease;
-}
-
 .sample {
   display: block;
   text-decoration: underline;
@@ -223,11 +213,6 @@
 }
 
 @media (hover: hover) {
-  .primary:hover {
-    background: var(--sand-mat);
-    border-color: var(--sand-mat);
-  }
-
   .sample:hover,
   .secondary:hover {
     text-decoration: underline;

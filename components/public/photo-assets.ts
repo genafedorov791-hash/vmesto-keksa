@@ -40,7 +40,7 @@ export const photos = {
     alt: "Говяжье филе с зеленью и соусом на белой тарелке",
     width: 1600,
     height: 1077,
-    sizes: "(max-width: 48rem) calc(100vw - 40px), 44vw",
+    sizes: "(max-width: 48rem) calc(100vw - 40px), (max-width: 100rem) 52vw, 52rem",
     focus: "51% 52%",
   },
   tartare: {
