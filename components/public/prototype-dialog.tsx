@@ -65,33 +65,27 @@ export function PreviewDialog({
   title,
   trigger,
   className,
-  headingClassName,
   children,
 }: {
   title: string;
   trigger: ReactNode;
   className?: string;
-  headingClassName?: string;
   children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const button = useRef<HTMLButtonElement>(null);
-  const triggerButton = (
-    <button
-      ref={button}
-      type="button"
-      className={className}
-      aria-haspopup="dialog"
-      onClick={() => dialog.current?.showModal()}
-    >
-      {trigger}
-    </button>
-  );
-
   return (
     <>
-      {headingClassName ? <h3 className={headingClassName}>{triggerButton}</h3> : triggerButton}
-      <Dialog dialogRef={dialog} title={title} onClose={() => button.current?.focus()}>
+      <button
+        ref={button}
+        type="button"
+        className={className}
+        aria-haspopup="dialog"
+        onClick={() => dialog.current?.showModal()}
+      >
+        {trigger}
+      </button>
+      <Dialog dialogRef={dialog} title={title} onClose={() => button.current?.focus({ preventScroll: true })}>
         {children}
       </Dialog>
     </>

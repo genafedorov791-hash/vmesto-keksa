@@ -86,24 +86,27 @@ function Gastronomy() {
         <div className="grid dish-grid">
           {featuredPreview.map((dish) => (
             <article className="dish-item" key={dish.id}>
-              <PhotoSlot asset={photos[dish.id]} className="dish-photo" />
-              <div className="dish-caption">
-                <p className="dish-category">{dish.category}</p>
-                <PreviewDialog
-                  title={dish.title}
-                  className="dish-trigger"
-                  headingClassName="dish-title"
-                  trigger={dish.title}
-                >
-                  <PhotoSlot asset={photos[dish.id]} sizes="(max-width: 44rem) 88vw, 36rem" />
-                  <p className="picture-note">Иллюстративная фотография</p>
-                  <p>{dish.detail}</p>
-                  <p className="dish-dialog-status">{dishPrice(dish.priceKopecks)} · {dish.availability}</p>
-                </PreviewDialog>
-                <p className="dish-description">{dish.description}</p>
-                <p className="dish-price">{dishPrice(dish.priceKopecks)}</p>
-                <p className="dish-availability">{dish.availability}</p>
-              </div>
+              <PreviewDialog
+                title={dish.title}
+                className="dish-trigger"
+                trigger={
+                  <>
+                    <PhotoSlot asset={photos[dish.id]} className="dish-photo" />
+                    <span className="dish-caption">
+                      <span className="dish-category">{dish.category}</span>
+                      <span className="dish-title">{dish.title}</span>
+                      <span className="dish-description">{dish.description}</span>
+                      <span className="dish-price">{dishPrice(dish.priceKopecks)}</span>
+                      <span className="dish-availability">{dish.availability}</span>
+                    </span>
+                  </>
+                }
+              >
+                <PhotoSlot asset={photos[dish.id]} sizes="(max-width: 44rem) 88vw, 36rem" />
+                <p className="picture-note">Иллюстративная фотография</p>
+                <p>{dish.detail}</p>
+                <p className="dish-dialog-status">{dishPrice(dish.priceKopecks)} · {dish.availability}</p>
+              </PreviewDialog>
             </article>
           ))}
         </div>
@@ -112,7 +115,10 @@ function Gastronomy() {
             <p>Демонстрационная подборка. Состав, цены и наличие подлежат подтверждению.</p>
             <ul className="preview-menu">
               {featuredPreview.map((dish) => (
-                <li key={dish.id}><span>{dish.title}</span><span>{dishPrice(dish.priceKopecks)}</span></li>
+                <li key={dish.id}>
+                  <span className="preview-menu__name">{dish.title}</span>
+                  <span className="preview-menu__price">{dishPrice(dish.priceKopecks)}</span>
+                </li>
               ))}
             </ul>
           </PreviewDialog>

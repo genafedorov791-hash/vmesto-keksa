@@ -14,7 +14,7 @@
 
 | Локальный файл | Размер, px | Использование | Автор и оригинал | Лицензия |
 |---|---:|---|---|---|
-| [hero.webp](../public/assets/photos/hero.webp) | 1800×1200 | Первый экран | [Matheus Bertelli](https://www.pexels.com/photo/interior-of-an-empty-modern-restaurant-17056978/) | [Pexels License](https://www.pexels.com/license/) |
+| [hero-seating.webp](../public/assets/photos/hero-seating.webp) | 1480×986 | Первый экран | [Matheus Bertelli](https://www.pexels.com/photo/elegant-setting-in-restaurant-17294776/) | [Pexels License](https://www.pexels.com/license/) |
 | [about-room.webp](../public/assets/photos/about-room.webp) | 1152×1536 | Знакомство, зал | [Avi Richards](https://unsplash.com/photos/fine-dining-setup-inside-restaurant-prz1uSrxsM4) | [Unsplash License](https://unsplash.com/license) |
 | [about-detail.webp](../public/assets/photos/about-detail.webp) | 900×1350 | Знакомство, деталь | [Long Chung](https://unsplash.com/photos/sunlight-streams-through-a-window-onto-a-cafe-table-6_Yye5kmEkM) | [Unsplash License](https://unsplash.com/license) |
 | [dish-filet-mignon.webp](../public/assets/photos/dish-filet-mignon.webp) | 1600×1077 | Гастрономия, филе миньон | [Andre](https://www.pexels.com/photo/a-white-plate-topped-with-a-piece-of-meat-and-sauce-27976946/) | [Pexels License](https://www.pexels.com/license/) |
@@ -22,11 +22,13 @@
 | [dish-napoleon.webp](../public/assets/photos/dish-napoleon.webp) | 1200×1600 | Гастрономия, «Наполеон» | [Karina Kungla](https://www.pexels.com/photo/piece-of-napoleon-cake-18198984/) | [Pexels License](https://www.pexels.com/license/) |
 | [dish-lemonade.webp](../public/assets/photos/dish-lemonade.webp) | 1600×1264 | Гастрономия, лимонад | [Shameel mukkath](https://www.pexels.com/photo/clear-drinking-glass-with-cucumber-lemonade-5817525/) | [Pexels License](https://www.pexels.com/license/) |
 | [breakfast.webp](../public/assets/photos/breakfast.webp) | 1600×1067 | Завтраки | [Alexis Presa](https://unsplash.com/photos/avocado-toast-with-side-salad-and-scrambled-eggs-HZgyUhnwzBo) | [Unsplash License](https://unsplash.com/license) |
-| [gallery-room.webp](../public/assets/photos/gallery-room.webp) | 1480×986 | Галерея, общий план | [Matheus Bertelli](https://www.pexels.com/photo/elegant-setting-in-restaurant-17294776/) | [Pexels License](https://www.pexels.com/license/) |
+| [gallery-daylight.webp](../public/assets/photos/gallery-daylight.webp) | 1800×1200 | Галерея, общий план | [Matheus Bertelli](https://www.pexels.com/photo/interior-of-an-empty-modern-restaurant-17056978/) | [Pexels License](https://www.pexels.com/license/) |
 | [gallery-detail.webp](../public/assets/photos/gallery-detail.webp) | 1060×1590 | Галерея, окно и растения | [İlknur Çelik](https://www.pexels.com/photo/empty-tables-near-windows-14790383/) | [Pexels License](https://www.pexels.com/license/) |
 | [gallery-table.webp](../public/assets/photos/gallery-table.webp) | 900×1350 | Галерея, сервировка | [Haberdoedas](https://unsplash.com/photos/empty-restaurant-tables-set-with-glasses-and-candles-hNLlmWCYocI) | [Unsplash License](https://unsplash.com/license) |
 
 Поиск охватил карточку и обзор edagda, а также открытые источники с фильтром по лицензиям. У фотографий самого бистро из этих источников не установлено разрешение на повторное использование. Карточка использована как предварительный источник по залу, блюдам, адресу, телефону и часам. Индивидуальные цены в карточке отсутствуют. [Карточка ресторана](https://edagda.ru/stavropol/restaurant/vmesto-keksa) · [Обзор](https://edagda.ru/stavropol/article/obzor-novykh-restoranov-v-stavropole-v-2026-g)
+
+В R3 сравнили широкий дневной зал, камерный кадр с зелёными креслами и портретный кадр Leonardo Ziaja с тёплым светом. Для первого экрана выбран кадр с креслами и растениями, он сохраняет сервированный стол при широком и мобильном кадрировании. Дневной зал перенесён в галерею. Кадр Ziaja изучен для сравнения. [Альтернативный кадр](https://unsplash.com/photos/elegant-restaurant-dining-area-with-warm-lighting-Ph7Y42lXzyw)
 
 ## Кадры для собственных материалов бистро
 

@@ -10,13 +10,13 @@ export type PhotoAsset = {
 
 export const photos = {
   hero: {
-    src: "/assets/photos/hero.webp",
-    alt: "Деревянные столы и кресла вдоль панорамных окон",
-    width: 1800,
-    height: 1200,
-    sizes: "(max-width: 48rem) calc(100vw - 40px), (max-width: 100rem) 66vw, 980px",
-    focus: "62% 53%",
-    mobileFocus: "68% 54%",
+    src: "/assets/photos/hero-seating.webp",
+    alt: "Зелёные кресла и сервированный стол под деревом в ресторанном зале",
+    width: 1480,
+    height: 986,
+    sizes: "(max-width: 48rem) calc(100vw - 40px), (max-width: 100rem) 61vw, 960px",
+    focus: "61% 50%",
+    mobileFocus: "58% 53%",
   },
   aboutRoom: {
     src: "/assets/photos/about-room.webp",
@@ -79,13 +79,13 @@ export const photos = {
     mobileFocus: "61% 55%",
   },
   galleryRoom: {
-    src: "/assets/photos/gallery-room.webp",
-    alt: "Зал с зелёными креслами и деревом у сервированных столов",
-    width: 1480,
-    height: 986,
+    src: "/assets/photos/gallery-daylight.webp",
+    alt: "Деревянные столы и кресла вдоль панорамных окон",
+    width: 1800,
+    height: 1200,
     sizes: "(max-width: 48rem) calc(100vw - 40px), 48vw",
-    focus: "66% 54%",
-    mobileFocus: "61% 55%",
+    focus: "62% 53%",
+    mobileFocus: "68% 54%",
   },
   galleryDetail: {
     src: "/assets/photos/gallery-detail.webp",
