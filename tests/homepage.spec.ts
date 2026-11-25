@@ -6,7 +6,7 @@ import { photos } from "../components/public/photo-assets";
 import { dishPrice } from "../components/public/site-content";
 import { syntheticPricePreview } from "./fixtures/synthetic-prices";
 
-const reviewDirectory = join("docs", "review", "01-homepage-r5");
+const reviewDirectory = join("docs", "review", "01-homepage-lettering");
 const fullPageByteLimit = 700_000;
 const requiredViewports = [
   { width: 1440, height: 900 },
@@ -108,14 +108,6 @@ async function capture(page: Page, name: string, fullPage = false) {
   throw new Error(`${name}: full-page screenshot exceeds ${fullPageByteLimit} bytes`);
 }
 
-async function captureTransition(page: Page, name: string, selector: string, offset: number) {
-  await page.locator(selector).evaluate((element, fraction) => {
-    const top = window.scrollY + element.getBoundingClientRect().top;
-    window.scrollTo({ top: top - window.innerHeight * fraction, behavior: "instant" });
-  }, offset);
-  await capture(page, name);
-}
-
 for (const { path, style, label, viewports } of covers) {
   for (const viewport of viewports) {
     test(`обложка ${label} в размере ${viewport.width}×${viewport.height}`, async ({ page, baseURL }) => {
@@ -165,6 +157,29 @@ for (const { path, style, label, viewports } of covers) {
       if (style === "cinema") {
         expect(image.x).toBeCloseTo(0, 0);
         expect(image.width).toBeCloseTo(viewport.width, 0);
+
+        const wordmark = page.locator(".hero-wordmark");
+        await expect(wordmark).toBeInViewport({ ratio: 1 });
+        const bounds = (await wordmark.boundingBox())!;
+        expect(bounds.x + bounds.width / 2).toBeCloseTo(viewport.width / 2, 0);
+        expect(Math.abs(bounds.y + bounds.height / 2 - viewport.height / 2))
+          .toBeLessThan(viewport.height * 0.05);
+
+        const wordsFit = await wordmark.locator("svg").evaluateAll((words) => words.map((word) => {
+          const svg = word as SVGSVGElement;
+          const drawing = svg.getBBox();
+          const frame = svg.viewBox.baseVal;
+          return drawing.x >= frame.x && drawing.y >= frame.y &&
+            drawing.x + drawing.width <= frame.x + frame.width &&
+            drawing.y + drawing.height <= frame.y + frame.height;
+        }));
+        expect(wordsFit).toEqual([true, true]);
+
+        if (viewport.width > 768) {
+          const composition = (await page.locator(".hero-stage").boundingBox())!;
+          expect(bounds.width / composition.width).toBeGreaterThanOrEqual(0.8);
+          expect(bounds.width / composition.width).toBeLessThanOrEqual(0.9);
+        }
       } else {
         const title = (await page.locator(".hero h1").boundingBox())!;
         expect(title.y + title.height).toBeLessThan(image.y);
@@ -194,19 +209,10 @@ for (const { path, style, label, viewports } of covers) {
       }
       await expectHomepagePhotosLoaded(page);
 
-      const size = `${viewport.width}x${viewport.height}`;
-      await capture(page, `hero-${label.toLowerCase()}-${size}`);
-      await capture(page, `home-${label.toLowerCase()}-${size}`, true);
-      if (process.env.CAPTURE_REVIEW === "1") {
-        if (label === "A" && size === "1440x900") {
-          await captureTransition(page, "transition-a-cover-about-1440x900", "#about", 0.18);
-        }
-        if (label === "A" && size === "390x844") {
-          await captureTransition(page, "transition-a-paper-olive-390x844", ".atmosphere-gallery", 0.3);
-        }
-        if (label === "B" && size === "390x844") {
-          await captureTransition(page, "transition-b-cover-about-390x844", "#about", 0.35);
-        }
+      if (style === "cinema" && viewport.width !== 768) {
+        const size = `${viewport.width}x${viewport.height}`;
+        await capture(page, `hero-a-${size}`);
+        await capture(page, `home-a-${size}`, true);
       }
       expect(pageErrors).toEqual([]);
       expect(failedResponses).toEqual([]);
@@ -270,7 +276,6 @@ test("мобильное меню работает с клавиатуры, ан
   await page.keyboard.press("Enter");
   await expect(dialog).toBeVisible();
   await expectAxePass(page);
-  await capture(page, "mobile-navigation-390x844");
 
   for (const direction of ["Tab", "Shift+Tab"]) {
     for (let press = 0; press < 8; press++) {
@@ -305,7 +310,6 @@ test("галерея открывается с клавиатуры и возв�
   await expectLocalPhotoLoaded(activePhoto);
   const firstPhoto = await activePhoto.getAttribute("src");
   await expectAxePass(page);
-  await capture(page, "gallery-1280x800");
   await page.keyboard.press("ArrowRight");
   await expect(dialog.getByRole("heading", { name: "Деталь интерьера", exact: true })).toBeVisible();
   await expectLocalPhotoLoaded(activePhoto);
@@ -349,7 +353,6 @@ test("демо-меню и подробности блюда доступны б
   await dish.getByRole("img").click();
   await expect(dialog.getByRole("heading", { name: dishNames[0], exact: true })).toBeVisible();
   await expectLocalPhotoLoaded(dialog.getByRole("img"));
-  await capture(page, "dish-interaction-1280x800");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(dish).toBeFocused();
@@ -364,11 +367,9 @@ test("демо-меню и подробности блюда доступны б
 test("выравнивание цен в демо-меню с синтетическими данными", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  if (process.env.CAPTURE_REVIEW === "1") await expectHomepagePhotosLoaded(page);
   await page.locator("#menu").getByRole("button", { name: "Открыть меню", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Меню", exact: true });
   await expect(dialog.locator(".preview-menu__price")).toHaveText(dishNames.map(() => "Цена уточняется"));
-  await capture(page, "menu-interaction-390x844");
 
   const previewPrices = syntheticPricePreview.items.map((item) => {
     const formatted = dishPrice(item.priceKopecks);

@@ -224,9 +224,10 @@
 
 .hero--cinema .hero-stage {
   flex: 1;
-  align-content: center;
-  row-gap: 0;
-  padding-block: clamp(3rem, 8svh, 6.2rem) clamp(3rem, 8.5svh, 6.5rem);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto minmax(max-content, 1fr);
+  gap: 0;
+  padding-block-end: clamp(1rem, 6.8svh, 4.4rem);
 }
 
 .hero--cinema .hero-title, .hero--cinema .hero-copy, .hero--cinema .hero-foot {
@@ -234,20 +235,44 @@
   z-index: 1;
 }
 
-.hero--cinema .hero-title { grid-area: 1 / 1 / 2 / 9; }
-.hero--cinema .hero-copy { grid-area: 2 / 1 / 3 / 8; }
+.hero--cinema .hero-title {
+  grid-row: 2;
+  width: 89%;
+  justify-self: center;
+}
+
+.hero--cinema .hero-eyebrow {
+  justify-content: center;
+  margin-block-end: clamp(0.75rem, 2vw, 1.7rem);
+}
 
 .hero--cinema .hero-eyebrow span + span::before { color: var(--brass); }
 
-.hero--cinema h1 {
-  font-size: clamp(6.05rem, 11.5vw, 12rem);
-  line-height: 0.75;
-  letter-spacing: -0.057em;
-  margin-block: 1.4rem 1.9rem;
+.hero--cinema h1 { margin: 0; }
+
+.hero-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 3.4%;
 }
 
-.hero--cinema h1 span, .hero--cinema h1 em { display: block; }
-.hero--cinema h1 em { margin: 0.045em 0 0 0.58em; }
+.hero-wordmark svg { display: block; min-width: 0; height: auto; }
+.hero-wordmark__first { flex: 550 1 0; width: 51%; }
+.hero-wordmark__second { flex: 493 1 0; width: 46%; }
+
+.hero--cinema .hero-copy {
+  grid-row: 3;
+  align-self: start;
+  padding-block-start: clamp(1.65rem, 4.35svh, 2.85rem);
+  text-align: center;
+}
+
+.hero--cinema .hero-description {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+.hero--cinema .hero-actions { justify-content: center; }
 
 .hero--cinema .hero-photo {
   position: absolute;
@@ -259,15 +284,23 @@
   background: var(--cover-ink);
   mask-image: linear-gradient(180deg, black 0 81%, transparent 100%);
 }
-.hero--cinema .hero-photo img { object-position: 50% 57%; }
+.hero--cinema .hero-photo img { object-position: 50% 53%; }
 
-/* The veil is localized to the words and controls. The table stays in the clear part of the photograph. */
+/* Keep the window light and upholstery visible outside the lettering and controls. */
 .hero--cinema .hero-photo .photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgb(23 30 25 / 83%);
-  mask-image: linear-gradient(90deg, black 0 35%, transparent 69%);
+  background:
+    radial-gradient(ellipse 40% 17% at 50% 68%,
+      rgb(23 30 25 / 65%) 44%, transparent 100%),
+    linear-gradient(180deg,
+      transparent 14%,
+      rgb(23 30 25 / 25%) 28%,
+      rgb(23 30 25 / 65%) 41% 57%,
+      rgb(23 30 25 / 34%) 69%,
+      rgb(23 30 25 / 72%) 83% 100%
+    );
   pointer-events: none;
 }
 
@@ -403,39 +436,49 @@
 }
 
 @media (max-width: 48rem) {
-  .hero--cinema .hero-stage {
-    grid-template-columns: minmax(0, 1fr);
-    align-content: end;
-    padding-block: clamp(13rem, 34svh, 19rem) 0.9rem;
+  .hero--cinema .hero-stage { padding-block-end: 1rem; }
+
+  .hero--cinema .hero-title { width: min(100%, 31rem); }
+
+  .hero-wordmark {
+    display: grid;
+    justify-items: center;
+    gap: 0;
   }
 
-  .hero--cinema .hero-title { grid-area: 1 / 1 / 2 / -1; }
-  .hero--cinema .hero-copy { grid-area: 2 / 1 / 3 / -1; }
+  .hero-wordmark__first { width: 100%; }
+  .hero-wordmark__second { width: 89%; }
 
-  .hero--cinema h1 {
-    font-size: clamp(3.65rem, 20.3vw, 8rem);
-    line-height: 0.75;
-    margin-block: 0.85rem 1.1rem;
+  .hero--cinema .hero-copy { padding-block-start: clamp(1.1rem, 3.4svh, 2rem); }
+
+  .hero--cinema .hero-description {
+    max-width: 29ch;
+    margin-block-end: 0.85rem;
   }
 
-  .hero--cinema h1 em { margin-inline-start: 0.46em; }
-  .hero--cinema .hero-description { margin-block-end: 0.85rem; }
-  .hero--cinema .hero-actions { gap: 0.25rem 0.95rem; }
+  .hero--cinema .hero-actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
 
   .hero--cinema .hero-photo {
     inset-block-end: auto;
-    block-size: clamp(24rem, 72svh, 37rem);
+    block-size: clamp(27rem, 76svh, 48rem);
   }
 
   .hero--cinema .hero-photo .photo {
-    mask-image: linear-gradient(180deg, black 0 55%, transparent 100%);
+    mask-image: linear-gradient(180deg, black 0 41%, transparent 100%);
   }
 
   .hero--cinema .hero-photo .photo::after {
-    mask-image: linear-gradient(180deg, transparent 0 31%, black 58% 100%);
+    background: linear-gradient(180deg,
+      transparent 24%,
+      rgb(23 30 25 / 35%) 42%,
+      rgb(23 30 25 / 78%) 66% 100%
+    );
   }
 
-  .hero--cinema .hero-photo img { object-position: 52% 60%; }
+  .hero--cinema .hero-photo img { object-position: 51% 56%; }
   .hero--cinema figcaption {
     inset-block: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 0.75rem) auto;
     font-size: 0.75rem;
@@ -472,10 +515,6 @@
   .hero--editorial .hero-actions { flex-direction: row; align-items: center; gap: 0.1rem 0.9rem; }
   .hero--editorial .hero-foot { margin-block-start: 0.85rem; }
   .hero-foot span, .hero-foot a { font-size: 0.75rem; }
-}
-
-@media (34rem < width <= 48rem) {
-  .hero--cinema .hero-photo { block-size: min(78svh, 48rem); }
 }
 
 @media (max-width: 42rem) {

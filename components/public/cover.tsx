@@ -1,4 +1,5 @@
 import { ActionArrow } from "./action-arrow";
+import { HeroWordmark } from "./hero-wordmark";
 import { photos } from "./photo-assets";
 import { PhotoSlot } from "./photo-slot";
 import { MobileNav } from "./prototype-dialog";
@@ -38,7 +39,16 @@ export function Hero({ variant }: { variant: CoverVariant }) {
         <div className="hero-stage grid">
           <div className="hero-title">
             <p className="eyebrow hero-eyebrow"><span>Гастробистро</span><span>Ставрополь</span></p>
-            <h1 id="hero-title"><span>Вместо</span>{" "}<em>Кекса</em></h1>
+            <h1 id="hero-title">
+              {isCinema ? (
+                <>
+                  <span className="sr-only">Вместо Кекса</span>
+                  <HeroWordmark />
+                </>
+              ) : (
+                <><span>Вместо</span>{" "}<em>Кекса</em></>
+              )}
+            </h1>
           </div>
           <figure className="hero-photo">
             <PhotoSlot asset={photos.hero} sizes={isCinema ? "100vw" : photos.hero.sizes} priority />
