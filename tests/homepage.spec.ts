@@ -1,9 +1,13 @@
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { photos } from "../components/public/photo-assets";
+import { dishPrice } from "../components/public/site-content";
+import { syntheticPricePreview } from "./fixtures/synthetic-prices";
 
-const reviewDirectory = join("docs", "review", "01-homepage-r2");
+const reviewDirectory = join("docs", "review", "01-homepage-r3");
+const fullPageByteLimit = 700_000;
 const requiredViewports = [
   { width: 1440, height: 900 },
   { width: 1280, height: 800 },
@@ -45,8 +49,16 @@ async function expectLocalPhotoLoaded(photo: Locator) {
 
 async function expectHomepagePhotosLoaded(page: Page) {
   const photos = await page.locator("main .photo img:visible").all();
-  expect(photos.length).toBeGreaterThanOrEqual(11);
-  for (const photo of photos) await expectLocalPhotoLoaded(photo);
+  expect(photos.length).toBe(11);
+  const files = new Set<string>();
+  for (const photo of photos) {
+    await expectLocalPhotoLoaded(photo);
+    files.add(await photo.evaluate((image: HTMLImageElement) => {
+      const src = new URL(image.currentSrc);
+      return src.searchParams.get("url") ?? src.pathname;
+    }));
+  }
+  expect(files.size).toBe(photos.length);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
@@ -65,15 +77,28 @@ async function expectAxePass(page: Page) {
 async function capture(page: Page, name: string, fullPage = false) {
   if (process.env.CAPTURE_REVIEW !== "1") return;
 
-  await page.screenshot({
-    path: join(reviewDirectory, `${name}.png`),
-    animations: "disabled",
-    caret: "initial",
-    scale: "css",
-    fullPage,
-    // A full-page capture should show the fixed dock at the footer, not over an earlier section.
-    style: fullPage ? "body { position: relative; } .mobile-dock { position: absolute; }" : undefined,
-  });
+  const options = { animations: "disabled", caret: "initial", scale: "css" } as const;
+  if (!fullPage) {
+    await page.screenshot({ ...options, path: join(reviewDirectory, `${name}.png`) });
+    return;
+  }
+
+  for (const quality of [76, 68, 60, 52, 44]) {
+    const image = await page.screenshot({
+      ...options,
+      fullPage: true,
+      type: "jpeg",
+      quality,
+      // Show the fixed dock at the footer in the full-page capture.
+      style: "body { position: relative; } .mobile-dock { position: absolute; }",
+    });
+    if (image.byteLength <= fullPageByteLimit) {
+      await writeFile(join(reviewDirectory, `${name}.jpg`), image);
+      return;
+    }
+  }
+
+  throw new Error(`${name}: full-page screenshot exceeds ${fullPageByteLimit} bytes`);
 }
 
 for (const viewport of requiredViewports) {
@@ -217,13 +242,19 @@ test("демо-меню и подробности блюда доступны б
   const dialog = page.getByRole("dialog");
   const opener = menu.getByRole("button", { name: "Открыть меню", exact: true });
   const dishButtons = dishNames.map((name) => menu.getByRole("button", { name: new RegExp(name) }));
-  for (const button of dishButtons) await expect(button).toBeVisible();
+  const dishCards = menu.getByRole("article");
+  await expect(dishCards).toHaveCount(dishNames.length);
+  for (const [index, card] of (await dishCards.all()).entries()) {
+    await expect(card.getByRole("button")).toHaveCount(1);
+    await expect(dishButtons[index].getByRole("img")).toBeVisible();
+  }
   for (const status of ["Цена уточняется", "Наличие уточняется"]) {
     const statuses = menu.locator(".dish-grid").getByText(status, { exact: true });
     await expect(statuses).toHaveCount(dishNames.length);
     for (const text of await statuses.all()) await expect(text).toBeVisible();
   }
   await expect(menu.getByText(/фотографии иллюстративные/i)).toBeVisible();
+  if (process.env.CAPTURE_REVIEW === "1") await expectHomepagePhotosLoaded(page);
 
   await opener.click();
   await expect(dialog.getByRole("heading", { name: "Меню", exact: true })).toBeVisible();
@@ -233,15 +264,64 @@ test("демо-меню и подробности блюда доступны б
   await expect(opener).toBeFocused();
 
   const dish = dishButtons[0];
-  await dish.focus();
-  await page.keyboard.press("Enter");
+  await dish.getByRole("img").click();
   await expect(dialog.getByRole("heading", { name: dishNames[0], exact: true })).toBeVisible();
   await expectLocalPhotoLoaded(dialog.getByRole("img"));
   await capture(page, "dish-interaction-1280x800");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(dish).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog.getByRole("heading", { name: dishNames[0], exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(dish).toBeFocused();
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("выравнивание цен в демо-меню с синтетическими данными", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  if (process.env.CAPTURE_REVIEW === "1") await expectHomepagePhotosLoaded(page);
+  await page.locator("#menu").getByRole("button", { name: "Открыть меню", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Меню", exact: true });
+  await expect(dialog.locator(".preview-menu__price")).toHaveText(dishNames.map(() => "Цена уточняется"));
+  await capture(page, "menu-interaction-390x844");
+
+  const previewPrices = syntheticPricePreview.items.map((item) => {
+    const formatted = dishPrice(item.priceKopecks);
+    expect(formatted.replace(/[\u00a0\u202f]/g, " ")).toBe(item.display);
+    return { title: item.title, formatted };
+  });
+
+  await dialog.evaluate((element, { label, items }) => {
+    const note = element.querySelector(".dialog-heading + p")!;
+    note.textContent = label;
+    element.querySelectorAll(".preview-menu li").forEach((row, index) => {
+      row.querySelector(".preview-menu__name")!.textContent = items[index].title;
+      row.querySelector(".preview-menu__price")!.textContent = items[index].formatted;
+    });
+  }, { label: syntheticPricePreview.label, items: previewPrices });
+
+  await expect(dialog.getByText(syntheticPricePreview.label, { exact: true })).toBeVisible();
+
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 800 });
+    await expectNoHorizontalOverflow(page);
+    const aligned = await dialog.locator(".preview-menu li").evaluateAll((rows) => rows.map((row) => {
+      const name = row.querySelector(".preview-menu__name")!;
+      const price = row.querySelector(".preview-menu__price")!;
+      const bounds = row.getBoundingClientRect();
+      const nameBounds = name.getBoundingClientRect();
+      const priceBounds = price.getBoundingClientRect();
+      return Math.abs(nameBounds.left - bounds.left) < 1 &&
+        Math.abs(priceBounds.right - bounds.right) < 1 &&
+        nameBounds.right <= priceBounds.left &&
+        ["start", "left"].includes(getComputedStyle(name).textAlign) &&
+        ["end", "right"].includes(getComputedStyle(price).textAlign);
+    }));
+    expect(aligned).toEqual([true, true, true, true]);
+  }
 });
 
 test("форма демонстрирует валидацию, шаги и завершение без отправки", async ({ page }) => {
