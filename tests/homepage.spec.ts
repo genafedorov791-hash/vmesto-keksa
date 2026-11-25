@@ -1,8 +1,9 @@
 import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
+import { photos } from "../components/public/photo-assets";
 
-const reviewDirectory = join("docs", "review", "01-homepage");
+const reviewDirectory = join("docs", "review", "01-homepage-r2");
 const requiredViewports = [
   { width: 1440, height: 900 },
   { width: 1280, height: 800 },
@@ -11,12 +12,42 @@ const requiredViewports = [
   { width: 768, height: 1024 },
 ] as const;
 const requiredSections = ["menu", "breakfast", "about", "atmosphere", "booking", "contacts"];
+const dishNames = [
+  "Филе миньон",
+  "Тартар из говядины",
+  "Наполеон со свежими фруктами",
+  "Огуречный лимонад",
+];
 
 async function expectNoHorizontalOverflow(page: Page) {
   await expect.poll(() => page.evaluate(() => {
     const viewport = document.documentElement.clientWidth;
     return Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - viewport;
   })).toBeLessThanOrEqual(0);
+}
+
+async function expectLocalPhotoLoaded(photo: Locator) {
+  await photo.scrollIntoViewIfNeeded();
+  await expect(photo).toHaveAttribute("alt", /\S/);
+  await expect(photo).toHaveAttribute("sizes", /\S/);
+  await expect(photo).toHaveAttribute("srcset", /\S/);
+
+  await expect.poll(() => photo.evaluate((image: HTMLImageElement) => {
+    if (!image.complete || image.naturalWidth === 0) return false;
+    const source = new URL(image.currentSrc);
+    const originalPath = source.pathname === "/_next/image"
+      ? source.searchParams.get("url")
+      : source.pathname;
+    return source.origin === window.location.origin &&
+      /^\/assets\/[^?]+\.webp$/i.test(originalPath ?? "");
+  })).toBe(true);
+}
+
+async function expectHomepagePhotosLoaded(page: Page) {
+  const photos = await page.locator("main .photo img:visible").all();
+  expect(photos.length).toBeGreaterThanOrEqual(11);
+  for (const photo of photos) await expectLocalPhotoLoaded(photo);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 }
 
 async function expectAxePass(page: Page) {
@@ -76,12 +107,21 @@ for (const viewport of requiredViewports) {
     expect(bookingTarget?.width).toBeGreaterThanOrEqual(44);
     expect(bookingTarget?.height).toBeGreaterThanOrEqual(44);
     await expect(page.locator("main a[href='#menu']").first()).toBeInViewport();
+    await expect(page.locator(".hero-photo img")).toBeInViewport({ ratio: 0.6 });
+    await expect(page.getByText("Иллюстративное фото интерьера", { exact: true })).toBeVisible();
 
     for (const id of requiredSections) await expect(page.locator(`#${id}`)).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     await expectNoHorizontalOverflow(page);
-    expect(await page.locator("a[href^='tel:']").count()).toBe(0);
-    expect(await page.locator("img:not([alt])").count()).toBe(0);
+    const contacts = page.locator("#contacts");
+    await expect(contacts.locator('a[href="tel:+79064640508"]')).toBeVisible();
+    await expect(contacts.getByText(/Дзержинского.{0,4}133/i)).toBeVisible();
+    await expect(contacts.getByText(/требуется подтверждение/i)).toBeVisible();
+    await expect(contacts.getByRole("link", { name: "edagda" })).toHaveAttribute(
+      "href",
+      "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
+    );
+    await expectHomepagePhotosLoaded(page);
 
     const size = `${viewport.width}x${viewport.height}`;
     await capture(page, `hero-${size}`);
@@ -96,6 +136,17 @@ test("проверка WCAG на широком экране", async ({ page }) 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expectAxePass(page);
+});
+
+test("если файл фотографии недоступен, видна текстовая замена", async ({ page }) => {
+  await page.route(
+    (url) => url.pathname === photos.hero.src || url.searchParams.get("url") === photos.hero.src,
+    (route) => route.abort(),
+  );
+  await page.goto("/");
+  const heroPhoto = page.locator(".hero-photo");
+  await expect(heroPhoto.getByRole("img")).toHaveAccessibleName(/фотография недоступна/i);
+  await expect(heroPhoto.getByText("Фотография недоступна", { exact: true })).toBeVisible();
 });
 
 test("мобильное меню работает с клавиатуры, анкоры доступны", async ({ page }) => {
@@ -143,10 +194,15 @@ test("галерея открывается с клавиатуры и возв�
   await page.keyboard.press("Enter");
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Интерьер", exact: true })).toBeVisible();
+  const activePhoto = dialog.getByRole("img");
+  await expectLocalPhotoLoaded(activePhoto);
+  const firstPhoto = await activePhoto.getAttribute("src");
   await expectAxePass(page);
   await capture(page, "gallery-1280x800");
   await page.keyboard.press("ArrowRight");
   await expect(dialog.getByRole("heading", { name: "Деталь интерьера", exact: true })).toBeVisible();
+  await expectLocalPhotoLoaded(activePhoto);
+  await expect(activePhoto).not.toHaveAttribute("src", firstPhoto ?? "");
   await page.keyboard.press("ArrowLeft");
   await expect(dialog.getByRole("heading", { name: "Интерьер", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
@@ -160,6 +216,15 @@ test("демо-меню и подробности блюда доступны б
   const menu = page.locator("#menu");
   const dialog = page.getByRole("dialog");
   const opener = menu.getByRole("button", { name: "Открыть меню", exact: true });
+  const dishButtons = dishNames.map((name) => menu.getByRole("button", { name: new RegExp(name) }));
+  for (const button of dishButtons) await expect(button).toBeVisible();
+  for (const status of ["Цена уточняется", "Наличие уточняется"]) {
+    const statuses = menu.locator(".dish-grid").getByText(status, { exact: true });
+    await expect(statuses).toHaveCount(dishNames.length);
+    for (const text of await statuses.all()) await expect(text).toBeVisible();
+  }
+  await expect(menu.getByText(/фотографии иллюстративные/i)).toBeVisible();
+
   await opener.click();
   await expect(dialog.getByRole("heading", { name: "Меню", exact: true })).toBeVisible();
   await expectAxePass(page);
@@ -167,10 +232,12 @@ test("демо-меню и подробности блюда доступны б
   await dialog.getByRole("button", { name: "Закрыть", exact: true }).click();
   await expect(opener).toBeFocused();
 
-  const dish = menu.getByRole("button", { name: /Основное блюдо/ });
+  const dish = dishButtons[0];
   await dish.focus();
   await page.keyboard.press("Enter");
-  await expect(dialog.getByRole("heading", { name: "Основное блюдо", exact: true })).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: dishNames[0], exact: true })).toBeVisible();
+  await expectLocalPhotoLoaded(dialog.getByRole("img"));
+  await capture(page, "dish-interaction-1280x800");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(dish).toBeFocused();
@@ -272,7 +339,7 @@ test.describe("мобильная безопасная область", () => {
     await page.goto("/");
     const dock = page.getByRole("navigation", { name: "Быстрые действия" });
     const dockActions = [
-      dock.getByRole("button", { name: "Позвонить" }),
+      dock.locator('a[href="tel:+79064640508"]'),
       dock.getByRole("link", { name: "Меню" }),
       dock.getByRole("link", { name: "Бронь" }),
     ];

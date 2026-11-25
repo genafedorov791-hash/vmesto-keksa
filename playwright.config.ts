@@ -2,7 +2,8 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { defineConfig } from "@playwright/test";
 
-const baseURL = "http://127.0.0.1:3230";
+const port = Number(process.env.PLAYWRIGHT_PORT ?? 3230);
+const baseURL = `http://127.0.0.1:${port}`;
 const edgePath = join(
   process.env["ProgramFiles(x86)"] ?? "C:/Program Files (x86)",
   "Microsoft",
@@ -28,7 +29,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: process.env.PLAYWRIGHT_COMMAND ?? "pnpm dev --port 3230",
+    command: process.env.PLAYWRIGHT_COMMAND ?? `pnpm dev --port ${port}`,
     reuseExistingServer: !process.env.CI,
     url: baseURL,
     timeout: 120_000,
