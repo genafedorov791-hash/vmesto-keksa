@@ -329,16 +329,17 @@ test("демо-меню и подробности блюда доступны б
   const menu = page.locator("#menu");
   const dialog = page.getByRole("dialog");
   const opener = menu.getByRole("button", { name: "Открыть меню", exact: true });
-  const dishButtons = dishNames.map((name) => menu.getByRole("button", { name: new RegExp(name) }));
+  const featuredNames = dishNames.slice(0, 3);
+  const dishButtons = featuredNames.map((name) => menu.getByRole("button", { name: new RegExp(name) }));
   const dishCards = menu.getByRole("article");
-  await expect(dishCards).toHaveCount(dishNames.length);
+  await expect(dishCards).toHaveCount(featuredNames.length);
   for (const [index, card] of (await dishCards.all()).entries()) {
     await expect(card.getByRole("button")).toHaveCount(1);
     await expect(dishButtons[index].getByRole("img")).toBeVisible();
   }
   for (const status of ["Цена уточняется", "Наличие уточняется"]) {
     const statuses = menu.locator(".dish-grid").getByText(status, { exact: true });
-    await expect(statuses).toHaveCount(dishNames.length);
+    await expect(statuses).toHaveCount(featuredNames.length);
     for (const text of await statuses.all()) await expect(text).toBeVisible();
   }
   await expect(menu.getByText(/фотографии иллюстративные/i)).toBeVisible();

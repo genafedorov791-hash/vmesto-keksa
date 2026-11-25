@@ -28,25 +28,34 @@ function Introduction() {
 function Gastronomy() {
   return (
     <section id="menu" tabIndex={-1} className="section gastronomy" aria-labelledby="menu-title">
-      <div className="container">
+      <div className="container gastronomy-layout">
         <div className="gastronomy-heading">
-          <div>
-            <p className="eyebrow">Из меню</p>
-            <h2 id="menu-title">Гастрономия</h2>
+          <h2 id="menu-title">Гастрономия</h2>
+          <p className="preview-note">Фотографии иллюстративные.</p>
+          <div className="gastronomy-action">
+            <PreviewDialog title="Меню" className="button button--light button--arrow" trigger={<><span>Открыть меню</span><ActionArrow /></>}>
+              <p>Демонстрационная подборка. Состав, цены и наличие подлежат подтверждению.</p>
+              <ul className="preview-menu">
+                {featuredPreview.map((dish) => (
+                  <li key={dish.id}>
+                    <span className="preview-menu__name">{dish.title}</span>
+                    <span className="preview-menu__price">{dishPrice(dish.priceKopecks)}</span>
+                  </li>
+                ))}
+              </ul>
+            </PreviewDialog>
           </div>
-          <p className="preview-note">Демонстрационная подборка по описаниям edagda. Фотографии иллюстративные. Цены и наличие уточняются.</p>
         </div>
-        <div className="grid dish-grid">
-          {featuredPreview.map((dish) => (
+        <div className="dish-grid">
+          {featuredPreview.slice(0, 3).map((dish) => (
             <article className="dish-item" key={dish.id}>
               <PreviewDialog
                 title={dish.title}
                 className="dish-trigger"
                 trigger={
                   <>
-                    <PhotoSlot asset={photos[dish.id]} className="dish-photo" />
+                    <PhotoSlot asset={photos[dish.id]} className="dish-photo" sizes={dish.id === "filet" ? "(max-width: 48rem) 90vw, (max-width: 64rem) 45vw, 30vw" : "(max-width: 48rem) 45vw, 22vw"} />
                     <span className="dish-caption">
-                      <span className="dish-category">{dish.category}</span>
                       <span className="dish-title">{dish.title}</span>
                       <span className="dish-description">{dish.description}</span>
                       <span className="dish-price">{dishPrice(dish.priceKopecks)}</span>
@@ -62,19 +71,6 @@ function Gastronomy() {
               </PreviewDialog>
             </article>
           ))}
-        </div>
-        <div className="gastronomy-action">
-          <PreviewDialog title="Меню" className="button button--dark button--arrow" trigger={<><span>Открыть меню</span><ActionArrow /></>}>
-            <p>Демонстрационная подборка. Состав, цены и наличие подлежат подтверждению.</p>
-            <ul className="preview-menu">
-              {featuredPreview.map((dish) => (
-                <li key={dish.id}>
-                  <span className="preview-menu__name">{dish.title}</span>
-                  <span className="preview-menu__price">{dishPrice(dish.priceKopecks)}</span>
-                </li>
-              ))}
-            </ul>
-          </PreviewDialog>
         </div>
       </div>
     </section>
