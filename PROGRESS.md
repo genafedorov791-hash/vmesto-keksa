@@ -124,11 +124,46 @@ Playwright проверил пять основных размеров, загр
 
 Состояния взаимодействия. [Меню на компьютере](docs/review/01-homepage-r3/menu-interaction-1280x800.png) · [Меню на телефоне](docs/review/01-homepage-r3/menu-interaction-390x844.png) · [Блюдо](docs/review/01-homepage-r3/dish-interaction-1280x800.png) · [Галерея](docs/review/01-homepage-r3/gallery-1280x800.png) · [Мобильная навигация](docs/review/01-homepage-r3/mobile-navigation-390x844.png) · [Форма брони](docs/review/01-homepage-r3/booking-interaction-390x844.png)
 
+## 25.11.2026 — художественная доработка R4
+
+Обложки реализованы в ветке `feature/01-homepage`, коммит `de9d0bb`. Обе обложки доступны локально. Вариант A «Кинематографическая обложка» открывается на главной `http://127.0.0.1:3230/`. Вариант B «Редакционная обложка» доступен по `http://127.0.0.1:3230/preview/editorial`. Для выбора также сохранена версия R3 в коммите `c015916`. [Директива R4](https://github.com/genafedorov791-hash/vmesto-keksa/pull/1#issuecomment-7170022989) · [Исходники R3](https://github.com/genafedorov791-hash/vmesto-keksa/tree/c0159167736abfa2b75e3896973122cf06ff12e8) · [Скриншоты R3](docs/review/01-homepage-r3/)
+
+- В A фотография занимает всю ширину, шапка входит в кадр, крупный заголовок и действия расположены в затемнённой зоне. Маска нужна для контраста текста, сервировка видна в светлой части.
+- В B название набрано в одну строку над фотографией. Светлый фон, асимметричный кадр, тонкие разделители и подпись формируют журнальную композицию. На телефоне сохранён порядок заголовок, фотография, описание, действия.
+- У основной кнопки высота 56 px и отдельная зона для стрелки. У вторичной ссылки линия и стрелка реагируют на наведение и фокус. Шапка и мобильная панель компактнее. Панель учитывает safe area. Движение отключается при `prefers-reduced-motion`.
+- Терракотовая полоса отделяет знакомство от гастрономии. Фотографии блюд собраны с единым умеренным цветовым тоном. Обе обложки используют лицензированный кадр из R3 и сохраняют подписи иллюстраций и статус «Цена уточняется». [Реестр фотографий](docs/assets-register.md)
+- После первого просмотра подпись A смещена ближе к краю видимой части снимка, название B собрано плотнее, а пропорции планшетных кадров скорректированы. На 360 и 390 px фото и обе ссылки видны выше нижней панели.
+
+### Проверки R4
+
+| Проверка | Результат |
+|---|---|
+| `pnpm lint`, `pnpm typecheck`, `pnpm build` | PASS |
+| `pnpm test:e2e` на локальной production-сборке с `CAPTURE_REVIEW=1` и `PLAYWRIGHT_COMMAND=pnpm start --port 3230` | PASS, 18/18, Microsoft Edge 158.0.4370.33, Node.js 24.22.3, 49,6 с |
+| Визуальная проверка обоих вариантов | PASS, проходы на 1440, 1280, 768, 390, 360 и 320 px |
+| Контраст текста поверх фото в A | PASS, минимум 8,39:1 в проверенных областях на 1440, 390 и 360 px |
+| GET главной и `/preview/editorial` | PASS, HTTP 200. Сервер оставлен на loopback |
+| Staging Lighthouse и полевые метрики | NOT RUN, проверялась локальная сборка |
+
+### Скриншоты R4
+
+| Экран | A, первый экран и вся страница | B, первый экран и вся страница |
+|---|---|---|
+| 1440×900 | [PNG](docs/review/01-homepage-r4/hero-a-1440x900.png) · [JPEG](docs/review/01-homepage-r4/home-a-1440x900.jpg) | [PNG](docs/review/01-homepage-r4/hero-b-1440x900.png) · [JPEG](docs/review/01-homepage-r4/home-b-1440x900.jpg) |
+| 1280×800 | [PNG](docs/review/01-homepage-r4/hero-a-1280x800.png) · [JPEG](docs/review/01-homepage-r4/home-a-1280x800.jpg) | — |
+| 390×844 | [PNG](docs/review/01-homepage-r4/hero-a-390x844.png) · [JPEG](docs/review/01-homepage-r4/home-a-390x844.jpg) | [PNG](docs/review/01-homepage-r4/hero-b-390x844.png) · [JPEG](docs/review/01-homepage-r4/home-b-390x844.jpg) |
+| 360×800 | [PNG](docs/review/01-homepage-r4/hero-a-360x800.png) · [JPEG](docs/review/01-homepage-r4/home-a-360x800.jpg) | [PNG](docs/review/01-homepage-r4/hero-b-360x800.png) · [JPEG](docs/review/01-homepage-r4/home-b-360x800.jpg) |
+| 768×1024 | [PNG](docs/review/01-homepage-r4/hero-a-768x1024.png) · [JPEG](docs/review/01-homepage-r4/home-a-768x1024.jpg) | — |
+
+Полностраничные JPEG укладываются в 700 КБ. В мобильном JPEG панель показана у подвала, в PNG первого экрана она видна на закреплённом месте. [Мобильная навигация](docs/review/01-homepage-r4/mobile-navigation-390x844.png) · [Демо-меню](docs/review/01-homepage-r4/menu-interaction-1280x800.png) · [Меню на телефоне](docs/review/01-homepage-r4/menu-interaction-390x844.png) · [Блюдо](docs/review/01-homepage-r4/dish-interaction-1280x800.png) · [Галерея](docs/review/01-homepage-r4/gallery-1280x800.png) · [Бронь](docs/review/01-homepage-r4/booking-interaction-390x844.png)
+
+Обе композиции передаются на выбор пользователя. Этап 2 ожидает визуальной приёмки.
+
 ## Статусы
 | Этап | Статус |
 |---|---|
 | Документация | Изучена |
-| 0–1. Каркас и главная | Доработан по R3 в PR #1, требуется визуальная приёмка |
+| 0–1. Каркас и главная | R4, две обложки готовы к выбору и визуальной приёмке |
 | 2. Меню | Не начат |
 | 3. Бронирования | Не начат |
 | 4. CRM/Telegram | Не начат |

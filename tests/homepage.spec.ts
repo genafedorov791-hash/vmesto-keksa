@@ -6,7 +6,7 @@ import { photos } from "../components/public/photo-assets";
 import { dishPrice } from "../components/public/site-content";
 import { syntheticPricePreview } from "./fixtures/synthetic-prices";
 
-const reviewDirectory = join("docs", "review", "01-homepage-r3");
+const reviewDirectory = join("docs", "review", "01-homepage-r4");
 const fullPageByteLimit = 700_000;
 const requiredViewports = [
   { width: 1440, height: 900 },
@@ -14,6 +14,13 @@ const requiredViewports = [
   { width: 390, height: 844 },
   { width: 360, height: 800 },
   { width: 768, height: 1024 },
+] as const;
+const covers = [
+  { path: "/", style: "cinema", label: "A", viewports: requiredViewports },
+  {
+    path: "/preview/editorial", style: "editorial", label: "B",
+    viewports: [requiredViewports[0], requiredViewports[2], requiredViewports[3]],
+  },
 ] as const;
 const requiredSections = ["menu", "breakfast", "about", "atmosphere", "booking", "contacts"];
 const dishNames = [
@@ -101,61 +108,107 @@ async function capture(page: Page, name: string, fullPage = false) {
   throw new Error(`${name}: full-page screenshot exceeds ${fullPageByteLimit} bytes`);
 }
 
-for (const viewport of requiredViewports) {
-  test(`главная в размере ${viewport.width}×${viewport.height}`, async ({ page, baseURL }) => {
-    await page.setViewportSize(viewport);
-    const externalRequests: string[] = [];
-    const failedResponses: string[] = [];
-    const pageErrors: string[] = [];
-    page.on("request", (request) => {
-      if (!request.url().startsWith(`${baseURL}/`)) externalRequests.push(request.url());
-    });
-    page.on("response", (response) => {
-      if (response.status() >= 400) failedResponses.push(response.url());
-    });
-    page.on("pageerror", (error) => pageErrors.push(error.message));
-    page.on("console", (message) => {
-      if (message.type() === "error") {
-        const location = message.location().url;
-        pageErrors.push(location ? `${location}: ${message.text()}` : message.text());
+for (const { path, style, label, viewports } of covers) {
+  for (const viewport of viewports) {
+    test(`обложка ${label} в размере ${viewport.width}×${viewport.height}`, async ({ page, baseURL }) => {
+      await page.setViewportSize(viewport);
+      const externalRequests: string[] = [];
+      const failedResponses: string[] = [];
+      const pageErrors: string[] = [];
+      page.on("request", (request) => {
+        if (!request.url().startsWith(`${baseURL}/`)) externalRequests.push(request.url());
+      });
+      page.on("response", (response) => {
+        if (response.status() >= 400) failedResponses.push(response.url());
+      });
+      page.on("pageerror", (error) => pageErrors.push(error.message));
+      page.on("console", (message) => {
+        if (message.type() === "error") {
+          const location = message.location().url;
+          pageErrors.push(location ? `${location}: ${message.text()}` : message.text());
+        }
+      });
+
+      const response = await page.goto(path);
+      expect(response?.ok()).toBe(true);
+      await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+      await expect(page.locator(".hero")).toHaveClass(`hero hero--${style}`);
+      await expect(page.locator("main h1")).toHaveCount(1);
+      await expect(page.getByRole("heading", { level: 1, name: /Вместо\s+Кекса/i })).toBeVisible();
+      const bookingCTA = page.getByRole("main").getByRole("link", { name: "Забронировать столик" }).first();
+      await expect(bookingCTA).toBeInViewport();
+      await expect(bookingCTA).toHaveAttribute("href", "#booking");
+      const bookingTarget = await bookingCTA.boundingBox();
+      expect(bookingTarget?.width).toBeGreaterThanOrEqual(44);
+      expect(bookingTarget?.height).toBeGreaterThanOrEqual(54);
+      expect(bookingTarget?.height).toBeLessThanOrEqual(58);
+      const menuCTA = page.locator(".hero a[href='#menu']");
+      const heroPhoto = page.locator(".hero-photo img");
+      await expect(menuCTA).toBeInViewport();
+      await expect(heroPhoto).toBeInViewport({ ratio: 0.6 });
+      const dock = await page.locator(".mobile-dock").boundingBox();
+      if (dock) {
+        for (const cta of [bookingCTA, menuCTA]) {
+          const box = (await cta.boundingBox())!;
+          expect(box.y + box.height).toBeLessThanOrEqual(dock.y + 1);
+        }
       }
+      const image = (await heroPhoto.boundingBox())!;
+      if (style === "cinema") {
+        expect(image.x).toBeCloseTo(0, 0);
+        expect(image.width).toBeCloseTo(viewport.width, 0);
+      } else {
+        const title = (await page.locator(".hero h1").boundingBox())!;
+        expect(title.y + title.height).toBeLessThan(image.y);
+      }
+      await expect(page.getByText("Иллюстративное фото интерьера", { exact: true })).toBeVisible();
+
+      for (const id of requiredSections) await expect(page.locator(`#${id}`)).toBeVisible();
+      await page.evaluate(() => document.fonts.ready);
+      await expectNoHorizontalOverflow(page);
+      const contacts = page.locator("#contacts");
+      await expect(contacts.locator('a[href="tel:+79064640508"]')).toBeVisible();
+      await expect(contacts.getByText(/Дзержинского.{0,4}133/i)).toBeVisible();
+      await expect(contacts.getByText(/требуется подтверждение/i)).toBeVisible();
+      await expect(contacts.getByRole("link", { name: "edagda" })).toHaveAttribute(
+        "href",
+        "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
+      );
+      await expectHomepagePhotosLoaded(page);
+
+      const size = `${viewport.width}x${viewport.height}`;
+      await capture(page, `hero-${label.toLowerCase()}-${size}`);
+      await capture(page, `home-${label.toLowerCase()}-${size}`, true);
+      expect(pageErrors).toEqual([]);
+      expect(failedResponses).toEqual([]);
+      expect(externalRequests).toEqual([]);
     });
-
-    const response = await page.goto("/");
-    expect(response?.ok()).toBe(true);
-    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-    await expect(page.getByRole("heading", { level: 1, name: /Вместо\s+Кекса/i })).toBeVisible();
-    const bookingCTA = page.getByRole("main").getByRole("link", { name: "Забронировать столик" }).first();
-    await expect(bookingCTA).toBeInViewport();
-    await expect(bookingCTA).toHaveAttribute("href", "#booking");
-    const bookingTarget = await bookingCTA.boundingBox();
-    expect(bookingTarget?.width).toBeGreaterThanOrEqual(44);
-    expect(bookingTarget?.height).toBeGreaterThanOrEqual(44);
-    await expect(page.locator("main a[href='#menu']").first()).toBeInViewport();
-    await expect(page.locator(".hero-photo img")).toBeInViewport({ ratio: 0.6 });
-    await expect(page.getByText("Иллюстративное фото интерьера", { exact: true })).toBeVisible();
-
-    for (const id of requiredSections) await expect(page.locator(`#${id}`)).toBeVisible();
-    await page.evaluate(() => document.fonts.ready);
-    await expectNoHorizontalOverflow(page);
-    const contacts = page.locator("#contacts");
-    await expect(contacts.locator('a[href="tel:+79064640508"]')).toBeVisible();
-    await expect(contacts.getByText(/Дзержинского.{0,4}133/i)).toBeVisible();
-    await expect(contacts.getByText(/требуется подтверждение/i)).toBeVisible();
-    await expect(contacts.getByRole("link", { name: "edagda" })).toHaveAttribute(
-      "href",
-      "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
-    );
-    await expectHomepagePhotosLoaded(page);
-
-    const size = `${viewport.width}x${viewport.height}`;
-    await capture(page, `hero-${size}`);
-    await capture(page, `home-${size}`, true);
-    expect(pageErrors).toEqual([]);
-    expect(failedResponses).toEqual([]);
-    expect(externalRequests).toEqual([]);
-  });
+  }
 }
+
+test("вариант B сохраняет клавиатурную навигацию, reflow и reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/preview/editorial");
+  await expectAxePass(page);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectAxePass(page);
+  const opener = page.getByRole("banner").getByRole("button", { name: "Открыть меню" });
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(opener).toBeFocused();
+  await page.setViewportSize({ width: 320, height: 800 });
+  await expectNoHorizontalOverflow(page);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  expect(await page.evaluate(() => document.getAnimations().some((animation) =>
+    Number(animation.effect?.getComputedTiming().endTime ?? 0) > 100,
+  ))).toBe(false);
+});
 
 test("проверка WCAG на широком экране", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
