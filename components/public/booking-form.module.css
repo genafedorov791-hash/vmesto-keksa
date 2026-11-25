@@ -1,0 +1,262 @@
+.form {
+  --form-rule: color-mix(in srgb, var(--pine) 56%, var(--milk));
+  --form-divider: color-mix(in srgb, var(--pine) 25%, var(--milk));
+  --form-error: color-mix(in srgb, var(--terracotta) 80%, var(--graphite));
+  container-type: inline-size;
+  min-inline-size: 0;
+  color: var(--pine);
+  border-block-start: 1px solid var(--pine);
+  padding-block: 0.8rem 0;
+}
+
+.notice,
+.hint,
+.error {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.notice {
+  margin: 0 0 1.3rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  border-block-start: 1px solid var(--form-divider);
+  padding-block-start: 0.45rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.steps li[data-complete="true"] {
+  border-color: var(--form-rule);
+}
+
+.steps li[aria-current="step"] {
+  box-shadow: inset 0 2px var(--pine);
+  border-color: var(--pine);
+  font-weight: 600;
+}
+
+.heading {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.9rem, 8cqi, 2.7rem);
+  font-weight: 500;
+  line-height: 1;
+  scroll-margin-block: 5rem;
+}
+
+.heading:focus {
+  outline: none;
+}
+
+.hint {
+  max-inline-size: 44ch;
+  margin: 0 0 0.9rem;
+}
+
+.visitFields,
+.contactFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.visitFields > :first-child,
+.fullField {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+  gap: 0.375rem;
+  min-inline-size: 0;
+}
+
+.field label,
+.seats legend,
+.choice {
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.field label,
+.seats legend {
+  font-weight: 500;
+}
+
+.field select,
+.field input,
+.field textarea {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 3rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid var(--form-rule);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--pine);
+  color-scheme: light;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.field input[type="date"],
+.field input[type="time"] {
+  text-align: start;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field [aria-invalid="true"] {
+  border-color: var(--form-error);
+}
+
+.optional {
+  font-weight: 400;
+}
+
+.select {
+  position: relative;
+}
+
+.select select {
+  appearance: none;
+  padding-inline-end: 2rem;
+}
+
+.select::after {
+  position: absolute;
+  inset-block-start: calc(50% - 0.25rem);
+  inset-inline-end: 0.85rem;
+  inline-size: 0.45rem;
+  block-size: 0.45rem;
+  transform: rotate(45deg);
+  border-block-end: 1px solid currentColor;
+  border-inline-end: 1px solid currentColor;
+  content: "";
+  pointer-events: none;
+}
+
+.seats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 0.75rem;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-block-size: 2.75rem;
+  cursor: pointer;
+  scroll-margin-block: 5rem;
+}
+
+.choice input {
+  flex: 0 0 auto;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin: 0;
+  accent-color: var(--pine);
+}
+
+.error {
+  display: block;
+  color: var(--form-error);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.85rem;
+  margin-block-start: 1.15rem;
+}
+
+.primary,
+.secondary,
+.sample {
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+  padding: 0.2rem 0.1rem;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--pine);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.primary {
+  min-block-size: 3.375rem;
+  padding-inline: 1.15rem;
+  border-color: var(--pine);
+  background: var(--pine);
+  color: var(--milk);
+}
+
+.sample {
+  display: block;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  margin-block: -0.4rem 0.25rem;
+}
+
+@media (hover: hover) {
+  .primary:hover {
+    background: transparent;
+    color: var(--pine);
+  }
+
+  .sample:hover,
+  .secondary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.form :is(input, textarea, select, button):focus-visible {
+  outline: 2px solid var(--pine);
+  outline-offset: 3px;
+  scroll-margin-block: 5rem;
+}
+
+@container (width >= 29rem) {
+  .visitFields {
+    grid-template-columns: minmax(4.25rem, 0.6fr) minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+
+  .visitFields > :first-child {
+    grid-column: auto;
+  }
+}
+
+@container (width < 18rem) {
+  .visitFields,
+  .contactFields,
+  .seats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
