@@ -6,7 +6,7 @@ import { photos } from "../components/public/photo-assets";
 import { dishPrice } from "../components/public/site-content";
 import { syntheticPricePreview } from "./fixtures/synthetic-prices";
 
-const reviewDirectory = join("docs", "review", "01-homepage-r4");
+const reviewDirectory = join("docs", "review", "01-homepage-r5");
 const fullPageByteLimit = 700_000;
 const requiredViewports = [
   { width: 1440, height: 900 },
@@ -108,6 +108,14 @@ async function capture(page: Page, name: string, fullPage = false) {
   throw new Error(`${name}: full-page screenshot exceeds ${fullPageByteLimit} bytes`);
 }
 
+async function captureTransition(page: Page, name: string, selector: string, offset: number) {
+  await page.locator(selector).evaluate((element, fraction) => {
+    const top = window.scrollY + element.getBoundingClientRect().top;
+    window.scrollTo({ top: top - window.innerHeight * fraction, behavior: "instant" });
+  }, offset);
+  await capture(page, name);
+}
+
 for (const { path, style, label, viewports } of covers) {
   for (const viewport of viewports) {
     test(`обложка ${label} в размере ${viewport.width}×${viewport.height}`, async ({ page, baseURL }) => {
@@ -174,11 +182,32 @@ for (const { path, style, label, viewports } of covers) {
         "href",
         "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
       );
+      const sectionColors = await page.locator(
+        "#about, #menu, #breakfast, #atmosphere, .atmosphere-gallery, #booking, #contacts",
+      ).evaluateAll((sections) => sections.map((section) => getComputedStyle(section).backgroundColor));
+      const [paper, menu, breakfast, atmosphere, gallery, booking, contactsColor] = sectionColors;
+      expect([menu, breakfast, atmosphere]).toEqual([paper, paper, paper]);
+      expect([booking, contactsColor]).toEqual([gallery, gallery]);
+      expect(paper).not.toEqual(gallery);
+      if (style === "editorial") {
+        await expect(page.locator(".hero")).toHaveCSS("background-color", paper);
+      }
       await expectHomepagePhotosLoaded(page);
 
       const size = `${viewport.width}x${viewport.height}`;
       await capture(page, `hero-${label.toLowerCase()}-${size}`);
       await capture(page, `home-${label.toLowerCase()}-${size}`, true);
+      if (process.env.CAPTURE_REVIEW === "1") {
+        if (label === "A" && size === "1440x900") {
+          await captureTransition(page, "transition-a-cover-about-1440x900", "#about", 0.18);
+        }
+        if (label === "A" && size === "390x844") {
+          await captureTransition(page, "transition-a-paper-olive-390x844", ".atmosphere-gallery", 0.3);
+        }
+        if (label === "B" && size === "390x844") {
+          await captureTransition(page, "transition-b-cover-about-390x844", "#about", 0.35);
+        }
+      }
       expect(pageErrors).toEqual([]);
       expect(failedResponses).toEqual([]);
       expect(externalRequests).toEqual([]);
@@ -422,6 +451,7 @@ test("форма демонстрирует валидацию, шаги и за
   await submit.click();
   await expect(section.getByLabel("Имя", { exact: true })).toBeFocused();
   await expect(section.getByLabel("Телефон", { exact: true })).toHaveAttribute("aria-invalid", "true");
+  await expectAxePass(page);
   await section.getByRole("button", { name: "Подставить тестовые данные" }).click();
   await submit.click();
   await expect(section.getByText("Подтвердите использование тестовых данных.")).toBeVisible();

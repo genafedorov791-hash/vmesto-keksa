@@ -28,16 +28,14 @@ function Introduction() {
 function Gastronomy() {
   return (
     <section id="menu" tabIndex={-1} className="section gastronomy" aria-labelledby="menu-title">
-      <div className="gastronomy-band">
-        <div className="container gastronomy-heading">
+      <div className="container">
+        <div className="gastronomy-heading">
           <div>
             <p className="eyebrow">Из меню</p>
             <h2 id="menu-title">Гастрономия</h2>
           </div>
           <p className="preview-note">Демонстрационная подборка по описаниям edagda. Фотографии иллюстративные. Цены и наличие уточняются.</p>
         </div>
-      </div>
-      <div className="container gastronomy-body">
         <div className="grid dish-grid">
           {featuredPreview.map((dish) => (
             <article className="dish-item" key={dish.id}>
@@ -108,7 +106,7 @@ function Breakfast() {
 
 function Atmosphere() {
   return (
-    <section id="atmosphere" tabIndex={-1} className="section atmosphere" aria-labelledby="atmosphere-title">
+    <section id="atmosphere" tabIndex={-1} className="atmosphere" aria-labelledby="atmosphere-title">
       <div className="container">
         <div className="atmosphere-heading">
           <div>
@@ -117,11 +115,15 @@ function Atmosphere() {
           </div>
           <p className="picture-note">Иллюстративные кадры</p>
         </div>
-        <AtmosphereGallery />
-        <div className="event-link">
-          <PreviewDialog title="Мероприятия" className="text-link" trigger="Обсудить мероприятие">
-            <p>Демонстрационный раздел. Контакты для обсуждения мероприятий появятся после согласования.</p>
-          </PreviewDialog>
+      </div>
+      <div className="atmosphere-gallery">
+        <div className="container">
+          <AtmosphereGallery />
+          <div className="event-link">
+            <PreviewDialog title="Мероприятия" className="text-link" trigger="Обсудить мероприятие">
+              <p>Демонстрационный раздел. Контакты для обсуждения мероприятий появятся после согласования.</p>
+            </PreviewDialog>
+          </div>
         </div>
       </div>
     </section>

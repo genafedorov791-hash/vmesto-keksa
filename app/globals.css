@@ -9,6 +9,10 @@
   --earth-text: #86412c;
   --line-light: #d0c5b2;
   --line-dark: #647568;
+  --closing-ink: #202c24;
+  --form-surface: #2a382e;
+  --sage-bridge: #96947d;
+  --sand-mat: #e2d6c1;
   --font-display: "Cormorant Garamond", "Times New Roman", serif;
   --font-body: "Golos Text", Arial, sans-serif;
   --gutter: clamp(1.25rem, 5vw, 5rem);
@@ -27,7 +31,7 @@ html {
 body {
   margin: 0;
   color: var(--graphite);
-  background: var(--pine);
+  background: var(--closing-ink);
   font: 400 1rem/1.55 var(--font-body);
   padding-block-end: var(--dock-height);
 }
@@ -249,8 +253,41 @@ figcaption, .picture-note {
   to { transform: translateY(0); }
 }
 
-.introduction, .booking { background: var(--milk); }
-.gastronomy { background: var(--paper); }
+.introduction, .gastronomy, .breakfast, .atmosphere { background: var(--milk); }
+
+.site-frame--cinema .introduction {
+  position: relative;
+  padding-block-start: clamp(1.1rem, 2.15vw, 1.9rem);
+}
+
+.site-frame--cinema .introduction::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(7rem, 10vw, 9rem);
+  background: linear-gradient(180deg, var(--cover-ink), #575e4a 29%, var(--sage-bridge) 56%, var(--sand-mat) 90%, var(--milk));
+  pointer-events: none;
+}
+
+.site-frame--cinema .intro-grid { position: relative; }
+
+.site-frame--cinema .intro-room {
+  grid-area: 1 / 7 / 3 / -1;
+  margin-inline-end: 0;
+}
+
+.site-frame--cinema .intro-room .photo { aspect-ratio: 1.16; }
+
+.site-frame--cinema .intro-detail {
+  grid-area: 1 / 2 / 2 / 5;
+  margin: clamp(1.3rem, 2.5vw, 2.3rem) 0 0;
+  aspect-ratio: 1.56;
+}
+
+.site-frame--cinema .intro-copy {
+  grid-area: 2 / 1 / 3 / 7;
+  align-self: start;
+}
 
 .intro-grid {
   grid-template-rows: auto 1fr;
@@ -276,8 +313,8 @@ figcaption, .picture-note {
 .breakfast-copy h2,
 .booking-copy h2 { margin-block-end: 1.4rem; }
 
-.intro-copy h2 em, .booking-copy h2 em { color: var(--pine); }
-.intro-copy .eyebrow, .breakfast-copy .eyebrow, .booking-copy .eyebrow { color: var(--earth-text); }
+.intro-copy h2 em, .breakfast-copy h2 em { color: var(--pine); }
+.intro-copy .eyebrow, .breakfast-copy .eyebrow { color: var(--earth-text); }
 
 .intro-room {
   grid-area: 1 / 8 / 3 / -1;
@@ -300,26 +337,22 @@ figcaption, .picture-note {
 
 .gastronomy { padding-block-start: 0; }
 
-.gastronomy-band {
-  color: var(--milk);
-  background: #693c30;
-}
-
 .gastronomy-heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem 2rem;
-  padding-block: clamp(2rem, 4.4vw, 3.9rem);
+  border-block-start: 1px solid var(--line-light);
+  padding-block: clamp(1.9rem, 4.4vw, 3.9rem) clamp(1.75rem, 4vw, 3.3rem);
 }
 
-.gastronomy-body { padding-block-start: clamp(1.75rem, 4vw, 3.3rem); }
+.gastronomy-heading .eyebrow { color: var(--earth-text); }
 .gastronomy-heading h2 { margin-block-start: 0.55rem; }
 
 .preview-note {
   max-width: 24rem;
-  border-inline-start: 1px solid #c4a58e;
+  border-inline-start: 1px solid var(--terracotta);
   padding-inline-start: 1rem;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -432,11 +465,35 @@ figcaption, .picture-note {
 
 .preview-menu__price, .dish-dialog-status { color: var(--earth-text); }
 
-.breakfast { background: var(--paper); }
+.breakfast { padding-block-start: 0; }
 
-.breakfast-grid { align-items: center; }
+.breakfast-grid {
+  position: relative;
+  align-items: center;
+  padding-block-start: clamp(2.1rem, 4.8vw, 4.2rem);
+}
 
-.breakfast-photo { grid-column: 1 / 8; }
+.breakfast-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--gutter) auto;
+  border-block-start: 1px solid var(--line-light);
+}
+
+.breakfast-photo {
+  position: relative;
+  isolation: isolate;
+  grid-column: 1 / 8;
+  margin-inline-end: 0.85rem;
+}
+
+.breakfast-photo::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: clamp(2rem, 6vw, 5.5rem) -0.85rem -0.7rem 2rem;
+  background: var(--sand-mat);
+}
 .breakfast-photo .photo { aspect-ratio: 1.59; }
 .breakfast-photo figcaption { color: var(--earth-text); }
 
@@ -451,21 +508,38 @@ figcaption, .picture-note {
 
 .breakfast-hours span { font-size: 0.8125rem; font-weight: 400; }
 
-.atmosphere, .contacts {
-  background-color: var(--pine);
-  color: var(--milk);
-}
-
-.atmosphere-heading, .contacts-copy { color: var(--milk); }
-.atmosphere-heading .eyebrow, .contacts-copy .eyebrow { color: var(--brass); }
-
 .atmosphere-heading {
   display: flex;
   justify-content: space-between;
   align-items: end;
   flex-wrap: wrap;
   gap: 0.75rem 2rem;
-  margin-block-end: clamp(1.4rem, 4.15vw, 3.2rem);
+  border-block-start: 1px solid var(--line-light);
+  padding-block: clamp(2.1rem, 4.8vw, 4.2rem) clamp(1.4rem, 4.15vw, 3.2rem);
+}
+
+.atmosphere-heading :is(.eyebrow, .picture-note) { color: var(--earth-text); }
+.atmosphere-heading em { color: var(--pine); }
+
+.atmosphere-gallery, .booking, .contacts {
+  background: var(--closing-ink);
+  color: var(--milk);
+}
+
+.atmosphere-gallery {
+  position: relative;
+  isolation: isolate;
+  padding-block-end: clamp(2.75rem, 5vw, 4.5rem);
+}
+
+.atmosphere-gallery::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: clamp(7.5rem, 16vw, 14rem);
+  background: linear-gradient(180deg, var(--milk), var(--sage-bridge) 26%, #56624e 59%, var(--closing-ink));
+  pointer-events: none;
 }
 
 .gallery-grid {
@@ -506,12 +580,27 @@ figcaption, .picture-note {
   border-block-start: 1px solid var(--line-dark);
 }
 
+.booking { padding-block-start: clamp(1.6rem, 4.6vw, 4.3rem); }
+
+.booking-copy .eyebrow, .contacts-copy .eyebrow { color: var(--brass); }
 .booking-grid { align-items: start; }
 .booking-copy { grid-column: 1 / 6; }
 .booking-copy h2 { line-height: 1.02; }
-.booking-form-column { grid-column: 7 / -1; min-width: 0; }
 
-.contacts { padding-block-end: 1.6rem; }
+.booking-form-column {
+  grid-column: 7 / -1;
+  min-width: 0;
+  padding: clamp(1.15rem, 3.1vw, 2.7rem);
+  border-block-start: 1px solid var(--brass);
+  background: var(--form-surface);
+}
+
+.contacts { padding-block: 0 1.6rem; }
+
+.contacts-grid {
+  padding-block-start: clamp(2.7rem, 5.3vw, 4.8rem);
+  border-block-start: 1px solid var(--line-dark);
+}
 
 .contacts-copy { grid-column: 1 / 7; }
 .contacts-copy h2 { max-width: 33rem; }
@@ -686,6 +775,21 @@ figcaption, .picture-note {
     aspect-ratio: 1.1;
   }
 
+  .site-frame--cinema .intro-room {
+    grid-area: 1 / 1 / 2 / -1;
+    margin-inline-end: 2rem;
+  }
+
+  .site-frame--cinema .intro-room .photo { aspect-ratio: 1.25; }
+
+  .site-frame--cinema .intro-detail {
+    grid-area: 1 / 2 / 2 / -1;
+    margin: 0 0 2rem 1.9rem;
+    aspect-ratio: 1.05;
+  }
+
+  .site-frame--cinema .intro-copy { grid-area: 2 / 1 / 3 / -1; }
+
   .gastronomy-heading { align-items: start; }
   .dish-grid { row-gap: 1.55rem; }
   .dish-item:nth-child(1) { grid-area: 1 / 1 / 2 / -1; }
@@ -698,7 +802,8 @@ figcaption, .picture-note {
   .dish-item:nth-child(4) .dish-photo { aspect-ratio: 1.13; }
 
   .breakfast-copy { grid-row: 1; margin-block-end: 0.2rem; }
-  .breakfast-photo { grid-row: 2; }
+  .breakfast-photo { grid-row: 2; margin-inline-end: 0.6rem; }
+  .breakfast-photo::before { inset-inline-end: -0.6rem; }
   .breakfast-photo .photo { aspect-ratio: 1.29; }
 
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
