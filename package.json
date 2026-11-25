@@ -1,0 +1,33 @@
+{
+  "name": "vmesto-keksa",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "node --import ./scripts/disable-next-telemetry.mjs ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1",
+    "build": "node --import ./scripts/disable-next-telemetry.mjs ./node_modules/next/dist/bin/next build",
+    "start": "node --import ./scripts/disable-next-telemetry.mjs ./node_modules/next/dist/bin/next start --hostname 127.0.0.1",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "node --import ./scripts/disable-next-telemetry.mjs ./node_modules/next/dist/bin/next typegen && tsc --noEmit",
+    "test": "playwright test",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.1",
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.6",
+    "typescript": "6.0.3"
+  }
+}
