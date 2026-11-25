@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./fonts.css";
 import "./globals.css";
+import "./cover.css";
 
 export const metadata: Metadata = {
   title: "Вместо Кекса — гастробистро в Ставрополе",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#21372E",
+  themeColor: "#171E19",
   viewportFit: "cover",
 };
 

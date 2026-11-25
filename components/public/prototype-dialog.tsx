@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent, ReactNode, RefObject } from "react";
+import { ActionArrow } from "./action-arrow";
 import { photos } from "./photo-assets";
 import { PhotoSlot } from "./photo-slot";
 import { galleryFrames, sections } from "./site-content";
@@ -130,7 +131,7 @@ export function MobileNav() {
             <a key={href} href={href} onClick={navigate}>{label}</a>
           ))}
         </nav>
-        <a href="#booking" className="button button--dark" onClick={navigate}>Забронировать столик</a>
+        <a href="#booking" className="button button--dark button--arrow" onClick={navigate}><span>Забронировать столик</span><ActionArrow /></a>
       </Dialog>
     </div>
   );
