@@ -1,15 +1,8 @@
 import { BookingForm } from "../../components/public/booking-form";
+import { photos } from "../../components/public/photo-assets";
 import { PhotoSlot } from "../../components/public/photo-slot";
 import { AtmosphereGallery, MobileNav, PreviewDialog } from "../../components/public/prototype-dialog";
-import { dishSlots, sections } from "../../components/public/site-content";
-
-function PhonePreview({ className }: { className?: string }) {
-  return (
-    <PreviewDialog title="Телефон ресторана" trigger="Позвонить" className={className}>
-      <p>Подтверждённый номер появится в разделе контактов.</p>
-    </PreviewDialog>
-  );
-}
+import { directory, dishPrice, featuredPreview, sections } from "../../components/public/site-content";
 
 function SiteHeader() {
   return (
@@ -23,7 +16,7 @@ function SiteHeader() {
           ))}
         </nav>
         <div className="header-actions">
-          <PhonePreview className="plain-action" />
+          <a href={directory.phoneHref} className="plain-action">Позвонить</a>
           <a href="#booking" className="button button--outline">Забронировать столик</a>
         </div>
         <MobileNav />
@@ -37,20 +30,22 @@ function Hero() {
     <section className="hero" aria-labelledby="hero-title">
       <div className="container hero-inner">
         <div className="hero-stage grid">
-          <div className="hero-photo">
-            <PhotoSlot caption="Место для фотографии интерьера" tone="pine" />
-          </div>
           <div className="hero-copy">
             <p className="eyebrow hero-eyebrow"><span>Гастробистро</span><span>Ставрополь</span></p>
             <h1 id="hero-title"><span>Вместо</span>{" "}<em>Кекса</em></h1>
+            <p className="hero-description">От первого кофе до ужина, за которым хочется задержаться.</p>
             <div className="hero-actions">
               <a href="#booking" className="button button--light">Забронировать столик</a>
               <a href="#menu" className="text-link">Смотреть меню</a>
             </div>
           </div>
+          <figure className="hero-photo">
+            <PhotoSlot asset={photos.hero} priority />
+            <figcaption>Иллюстративное фото интерьера</figcaption>
+          </figure>
         </div>
         <div className="hero-foot">
-          <a href="#contacts" className="plain-action">Адрес уточняется</a>
+          <a href="#contacts" className="plain-action">Ул. {directory.address}</a>
           <span>Демонстрационная версия</span>
         </div>
       </div>
@@ -65,10 +60,13 @@ function Introduction() {
         <div className="intro-copy">
           <p className="eyebrow">О ресторане</p>
           <h2 id="about-title">Вместо спешки —<br /><em>время для себя</em></h2>
-          <p className="section-copy">«Вместо Кекса» — гастробистро в Ставрополе. Здесь можно начать день с завтрака, встретиться за обедом или провести вечер за одним столом.</p>
+          <p className="section-copy">Утром здесь встречаются за завтраком, вечером собираются за ужином. Панорамные окна, живые растения и европейская кухня задают характер небольшого бистро.</p>
         </div>
-        <PhotoSlot className="intro-detail" caption="Место для фотографии детали" tone="sand" />
-        <PhotoSlot className="intro-room" caption="Место для фотографии зала" tone="olive" />
+        <PhotoSlot className="intro-detail" asset={photos.aboutDetail} />
+        <figure className="intro-room">
+          <PhotoSlot asset={photos.aboutRoom} />
+          <figcaption>Иллюстративные кадры</figcaption>
+        </figure>
       </div>
     </section>
   );
@@ -79,35 +77,44 @@ function Gastronomy() {
     <section id="menu" tabIndex={-1} className="section gastronomy" aria-labelledby="menu-title">
       <div className="container">
         <div className="gastronomy-heading">
-          <h2 id="menu-title">Гастрономия</h2>
-          <p className="section-copy">Демонстрационные позиции. Блюда, цены и наличие появятся после согласования меню.</p>
+          <div>
+            <p className="eyebrow">Из меню</p>
+            <h2 id="menu-title">Гастрономия</h2>
+          </div>
+          <p className="preview-note">Демонстрационная подборка по описаниям edagda. Фотографии иллюстративные. Цены и наличие уточняются.</p>
         </div>
         <div className="grid dish-grid">
-          {dishSlots.map(({ title, caption, tone }) => (
-            <div className="dish-item" key={title}>
-              <PreviewDialog
-                title={title}
-                className="dish-trigger"
-                trigger={
-                  <>
-                    <PhotoSlot caption={caption} tone={tone} />
-                    <span className="dish-caption">
-                      <span className="dish-title">{title}</span>
-                      <span className="dish-meta">Цена и наличие уточняются</span>
-                    </span>
-                  </>
-                }
-              >
-                <PhotoSlot caption={caption} tone={tone} />
-                <p>Демонстрационная позиция. Описание, состав, цена и наличие появятся после согласования меню.</p>
-              </PreviewDialog>
-            </div>
+          {featuredPreview.map((dish) => (
+            <article className="dish-item" key={dish.id}>
+              <PhotoSlot asset={photos[dish.id]} className="dish-photo" />
+              <div className="dish-caption">
+                <p className="dish-category">{dish.category}</p>
+                <PreviewDialog
+                  title={dish.title}
+                  className="dish-trigger"
+                  headingClassName="dish-title"
+                  trigger={dish.title}
+                >
+                  <PhotoSlot asset={photos[dish.id]} sizes="(max-width: 44rem) 88vw, 36rem" />
+                  <p className="picture-note">Иллюстративная фотография</p>
+                  <p>{dish.detail}</p>
+                  <p className="dish-dialog-status">{dishPrice(dish.priceKopecks)} · {dish.availability}</p>
+                </PreviewDialog>
+                <p className="dish-description">{dish.description}</p>
+                <p className="dish-price">{dishPrice(dish.priceKopecks)}</p>
+                <p className="dish-availability">{dish.availability}</p>
+              </div>
+            </article>
           ))}
         </div>
         <div className="gastronomy-action">
           <PreviewDialog title="Меню" className="button button--dark" trigger="Открыть меню">
-            <p>Демонстрационный раздел. Здесь будут категории и позиции с подтверждёнными ценами.</p>
-            <p>Макет раздела «Завтраки» доступен на главной странице.</p>
+            <p>Демонстрационная подборка. Состав, цены и наличие подлежат подтверждению.</p>
+            <ul className="preview-menu">
+              {featuredPreview.map((dish) => (
+                <li key={dish.id}><span>{dish.title}</span><span>{dishPrice(dish.priceKopecks)}</span></li>
+              ))}
+            </ul>
           </PreviewDialog>
         </div>
       </div>
@@ -119,13 +126,18 @@ function Breakfast() {
   return (
     <section id="breakfast" tabIndex={-1} className="section breakfast" aria-labelledby="breakfast-title">
       <div className="container grid breakfast-grid">
-        <PhotoSlot className="breakfast-photo" caption="Место для фотографии завтрака" tone="chalk" />
+        <figure className="breakfast-photo">
+          <PhotoSlot asset={photos.breakfast} />
+          <figcaption>Иллюстративная фотография завтрака</figcaption>
+        </figure>
         <div className="breakfast-copy">
           <p className="eyebrow">Завтраки</p>
           <h2 id="breakfast-title">Начать день<br /><em>за столом</em></h2>
-          <p className="section-copy">Меню и часы подачи завтраков уточняются.</p>
+          <p className="section-copy">Скрэмбл с креветками, картофельной роти и кремом из авокадо.</p>
+          <p className="breakfast-hours">{directory.breakfastHours} <span>· по данным edagda, уточняется</span></p>
           <PreviewDialog title="Меню завтраков" className="text-link" trigger="Смотреть завтраки">
-            <p>Демонстрационная категория. Позиции, цены и часы подачи появятся после согласования.</p>
+            <p>В edagda упоминаются скрэмбл с креветками, полента со шпинатом и страчателлой и рисовая каша с клубникой на кокосовом молоке.</p>
+            <p>Демонстрационная подборка. Точные часы подачи, состав, цены и наличие уточняются.</p>
           </PreviewDialog>
         </div>
       </div>
@@ -138,8 +150,11 @@ function Atmosphere() {
     <section id="atmosphere" tabIndex={-1} className="section atmosphere" aria-labelledby="atmosphere-title">
       <div className="container">
         <div className="atmosphere-heading">
-          <p className="eyebrow">Атмосфера</p>
-          <h2 id="atmosphere-title">Вместо переписки — <em>встреча</em></h2>
+          <div>
+            <p className="eyebrow">Атмосфера</p>
+            <h2 id="atmosphere-title">Вместо переписки — <em>встреча</em></h2>
+          </div>
+          <p className="picture-note">Иллюстративные кадры</p>
         </div>
         <AtmosphereGallery />
         <div className="event-link">
@@ -175,19 +190,18 @@ function Contacts() {
           <div className="contacts-copy">
             <p className="eyebrow">Контакты</p>
             <h2 id="contacts-title">Увидимся <em>за столом</em></h2>
+            <p className="contact-source">Адрес, телефон и часы по данным <a href={directory.href}>{directory.name}</a>. Требуется подтверждение.</p>
           </div>
           <dl className="contact-details">
-            <div><dt>Адрес</dt><dd>Ставрополь. Адрес уточняется.</dd></div>
-            <div><dt>Режим работы</dt><dd>Уточняется</dd></div>
-            <div><dt>Телефон</dt><dd>Уточняется</dd></div>
+            <div><dt>Адрес</dt><dd>Ставрополь, ул. {directory.address}</dd></div>
             <div>
-              <dt>Маршрут</dt>
-              <dd>
-                <PreviewDialog title="Маршрут" className="text-link" trigger="Как добраться">
-                  <p>Ссылка на карту появится после подтверждения адреса.</p>
-                </PreviewDialog>
+              <dt>Режим работы</dt>
+              <dd className="contact-hours">
+                {directory.hours.map(({ days, time }) => <span key={days}>{days} <span>{time}</span></span>)}
               </dd>
             </div>
+            <div><dt>Телефон</dt><dd><a className="text-link" href={directory.phoneHref}>{directory.phone}</a></dd></div>
+            <div><dt>Маршрут</dt><dd><a className="text-link" href={directory.directionsHref}>Как добраться</a></dd></div>
           </dl>
         </div>
         <div className="footer-bottom">
@@ -220,7 +234,7 @@ export default function Home() {
       </main>
       <Contacts />
       <nav className="mobile-dock" aria-label="Быстрые действия">
-        <PhonePreview className="mobile-dock__action" />
+        <a className="mobile-dock__action" href={directory.phoneHref}>Позвонить</a>
         <a href="#menu" className="mobile-dock__action">Меню</a>
         <a href="#booking" className="mobile-dock__action mobile-dock__booking">Бронь</a>
       </nav>

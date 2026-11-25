@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import type { KeyboardEvent, MouseEvent, ReactNode, RefObject } from "react";
+import { photos } from "./photo-assets";
 import { PhotoSlot } from "./photo-slot";
 import { galleryFrames, sections } from "./site-content";
 
@@ -64,27 +65,32 @@ export function PreviewDialog({
   title,
   trigger,
   className,
+  headingClassName,
   children,
 }: {
   title: string;
   trigger: ReactNode;
   className?: string;
+  headingClassName?: string;
   children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const button = useRef<HTMLButtonElement>(null);
+  const triggerButton = (
+    <button
+      ref={button}
+      type="button"
+      className={className}
+      aria-haspopup="dialog"
+      onClick={() => dialog.current?.showModal()}
+    >
+      {trigger}
+    </button>
+  );
 
   return (
     <>
-      <button
-        ref={button}
-        type="button"
-        className={className}
-        aria-haspopup="dialog"
-        onClick={() => dialog.current?.showModal()}
-      >
-        {trigger}
-      </button>
+      {headingClassName ? <h3 className={headingClassName}>{triggerButton}</h3> : triggerButton}
       <Dialog dialogRef={dialog} title={title} onClose={() => button.current?.focus()}>
         {children}
       </Dialog>
@@ -168,7 +174,7 @@ export function AtmosphereGallery() {
               dialog.current?.showModal();
             }}
           >
-            <PhotoSlot caption={frame.caption} tone={frame.tone} />
+            <PhotoSlot asset={photos[frame.asset]} />
             <span className="gallery-item__title">{frame.title}</span>
           </button>
         ))}
@@ -180,7 +186,8 @@ export function AtmosphereGallery() {
         onClose={() => opener.current?.focus({ preventScroll: true })}
         onKeyDown={handleKeys}
       >
-        <PhotoSlot caption={active.caption} tone={active.tone} />
+        <PhotoSlot asset={photos[active.asset]} sizes="(max-width: 52rem) 88vw, 45rem" />
+        <p className="picture-note">Иллюстративная фотография</p>
         <div className="gallery-dialog__controls">
           <button type="button" className="text-link" onClick={() => move(-1)}>Предыдущий кадр</button>
           <span className="sr-only" role="status">{active.title}, кадр {index + 1} из {galleryFrames.length}</span>
