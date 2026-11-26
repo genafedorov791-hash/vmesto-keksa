@@ -29,7 +29,7 @@ test("настольное меню фильтрует блюда и восст�
   await page.getByRole("button", { name: "Закуски", exact: true }).click();
   await expect(list.getByRole("button")).toHaveCount(1);
   await expect(list.getByRole("button", { name: "Тартар из говядины", exact: true })).toBeVisible();
-  await expect(details.getByText("Цена уточняется", { exact: true })).toBeVisible();
+  await expect(details.locator(".menu-detail__status")).toHaveCount(0);
   const image = details.getByRole("img");
   await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
   await expect(image).toHaveAttribute("src", /dish-tartare/);
@@ -84,7 +84,8 @@ test("мобильные завтраки раскрываются под блю
   const selection = page.getByRole("dialog", { name: "Мой выбор" });
   await expect(selection.getByText("Полента со шпинатом и страчателлой")).toBeVisible();
   await selection.getByRole("button", { name: /Добавить порцию.*Полента/ }).click();
-  await expect(selection.getByText("Порций с неуточнённой ценой: 2")).toBeVisible();
+  await expect(selection.getByLabel("Количество порций: 2")).toBeVisible();
+  await expect(selection.locator(".menu-selection__summary")).toHaveCount(0);
   await expect(selection.getByText("Итого")).toHaveCount(0);
   await selection.getByRole("button", { name: /Убрать из выбора.*Полента/ }).click();
   await expect(selection.getByText("Здесь можно сохранить блюда из обоих меню.")).toBeVisible();
@@ -95,7 +96,7 @@ test("мобильные завтраки раскрываются под блю
 
 test("сумма использует актуальные известные цены в целых копейках", () => {
   for (const item of syntheticPricePreview.items) {
-    expect(dishPrice(item.priceKopecks).replace(/[\u00a0\u202f]/g, " ")).toBe(item.display);
+    expect(dishPrice(item.priceKopecks)?.replace(/[\u00a0\u202f]/g, " ")).toBe(item.display);
   }
   const catalog = menuDishes.slice(0, 4).map((dish, index) => ({
     ...dish,

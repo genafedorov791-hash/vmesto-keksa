@@ -9,7 +9,6 @@ export const directory = {
     { days: "Пн–чт, вс", time: "09:00–22:00" },
     { days: "Пт–сб", time: "09:00–23:00" },
   ],
-  breakfastHours: "09:00–12:00",
 } as const;
 
 export const sections = [

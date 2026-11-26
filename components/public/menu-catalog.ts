@@ -24,7 +24,7 @@ export type MenuDish = {
   category: MenuCategory;
   title: string;
   description: string;
-  detail: string;
+  detail?: string;
   ingredients: readonly string[] | null;
   allergens: readonly string[] | null;
   serving: { amount: number; unit: "г" | "мл" } | null;
@@ -50,7 +50,7 @@ export const menuDishes: readonly MenuDish[] = [
     category: "hot",
     title: "Филе миньон",
     description: "Говядина с белыми грибами, брокколи и картофельным пюре.",
-    detail: "В описании edagda филе подают с нежным пюре из картофеля, белыми грибами и брокколи.",
+    detail: "Говяжье филе с картофельным пюре, белыми грибами и брокколи.",
     photo: "filet",
     featuredOnHome: true,
   },
@@ -61,7 +61,7 @@ export const menuDishes: readonly MenuDish[] = [
     category: "starters",
     title: "Тартар из говядины",
     description: "Говядина, каперсы и трюфельная заправка.",
-    detail: "Справочник описывает подачу на мозговой кости с каперсами и заправкой с трюфелем.",
+    detail: "Подача на мозговой кости, с каперсами и трюфельной заправкой.",
     photo: "tartare",
     featuredOnHome: true,
   },
@@ -72,7 +72,7 @@ export const menuDishes: readonly MenuDish[] = [
     category: "desserts",
     title: "Наполеон со свежими фруктами",
     description: "Слоёный десерт, который дополняют свежими фруктами.",
-    detail: "Сочетание слоёного десерта и свежих фруктов указано в подборке edagda. Виды фруктов и состав крема уточняются.",
+    detail: "Слоёный десерт со свежими фруктами.",
     photo: "napoleon",
     featuredOnHome: true,
   },
@@ -83,7 +83,7 @@ export const menuDishes: readonly MenuDish[] = [
     category: "drinks",
     title: "Огуречный лимонад",
     description: "Освежающий напиток с огурцом.",
-    detail: "Огуречный лимонад упоминается в описании напитков edagda. Объём и полный состав уточняются.",
+    detail: "Освежающий напиток с огурцом.",
     photo: "lemonade",
   },
   {
@@ -93,7 +93,7 @@ export const menuDishes: readonly MenuDish[] = [
     category: "savoury",
     title: "Скрэмбл с креветками",
     description: "С картофельной роти и кремом из авокадо.",
-    detail: "В обзоре edagda упоминается скрэмбл с креветками, картофельной роти и кремом из авокадо.",
+    detail: "С картофельной роти и кремом из авокадо.",
     photo: "breakfast",
   },
   {
@@ -102,8 +102,7 @@ export const menuDishes: readonly MenuDish[] = [
     menus: ["breakfast"],
     category: "savoury",
     title: "Полента со шпинатом и страчателлой",
-    description: "Полента со шпинатом и страчателлой по описанию edagda.",
-    detail: "Полента со шпинатом и страчателлой упоминается в разделе завтраков edagda.",
+    description: "Полента со шпинатом и страчателлой.",
     photo: "polenta",
   },
   {
@@ -112,8 +111,8 @@ export const menuDishes: readonly MenuDish[] = [
     menus: ["breakfast"],
     category: "cereals",
     title: "Рисовая каша с клубникой",
-    description: "Рисовая каша на кокосовом молоке по описанию edagda.",
-    detail: "Справочник упоминает рисовую кашу с клубникой на кокосовом молоке.",
+    description: "Рисовая каша на кокосовом молоке.",
+    detail: "На кокосовом молоке.",
     photo: "ricePorridge",
   },
 ];
@@ -121,12 +120,12 @@ export const menuDishes: readonly MenuDish[] = [
 const rubles = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
 
 export function dishPrice(value: number | null) {
-  return value === null ? "Цена уточняется" : `${rubles.format(value / 100)} ₽`;
+  return value === null ? null : `${rubles.format(value / 100)} ₽`;
 }
 
-export const availabilityLabels: Record<Availability, string> = {
+export const availabilityLabels: Record<Availability, string | null> = {
   available: "В наличии",
-  unverified: "Наличие уточняется",
+  unverified: null,
   "sold-out": "Временно недоступно",
 };
 

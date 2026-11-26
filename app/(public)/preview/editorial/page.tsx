@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { HomePage } from "../../../../components/public/home-page";
 
 export const metadata: Metadata = {
-  title: "Вместо Кекса — редакционная обложка",
-  description: "Локальный вариант первого экрана гастробистро «Вместо Кекса».",
+  title: "Ресторан «Вместо Кекса»",
+  description: "Ресторан «Вместо Кекса» в Ставрополе.",
 };
 
 export const viewport: Viewport = {

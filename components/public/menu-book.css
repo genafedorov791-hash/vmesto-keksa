@@ -156,12 +156,6 @@ body:has(.menu-view) { padding-block-end: 0; }
   letter-spacing: -.07em;
 }
 
-.menu-view .menu-hours {
-  margin-block: .75rem 0;
-  color: var(--book-soft);
-  font-size: .78rem;
-}
-
 .menu-view .menu-search {
   display: flex;
   align-items: center;
@@ -253,7 +247,6 @@ body:has(.menu-view) { padding-block-end: 0; }
 
 .menu-view .menu-row__arrow { flex-shrink: 0; color: var(--book-bronze); font: 400 1.15rem/1 var(--font-body); }
 
-.menu-view .menu-source,
 .menu-view .menu-empty {
   margin-block: 1.35rem 0;
   max-width: 37ch;
@@ -262,11 +255,26 @@ body:has(.menu-view) { padding-block-end: 0; }
   line-height: 1.55;
 }
 
-.menu-view .menu-source a,
+.menu-view .menu-source {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block-start: .65rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--book-soft);
+  font: 500 .77rem/1.55 var(--font-body);
+}
+
+.menu-view .menu-source,
 .menu-view .menu-detail__figure a {
-  color: inherit;
   text-decoration: underline;
   text-underline-offset: .18em;
+}
+
+.menu-view .menu-detail__figure a {
+  color: inherit;
 }
 
 .menu-view .menu-spread {
@@ -373,6 +381,9 @@ body:has(.menu-view) { padding-block-end: 0; }
   padding-block-start: .85rem;
   border-top: 1px solid var(--book-rule);
 }
+
+.menu-view .menu-detail h2 + .menu-detail__actions { margin-block-start: .85rem; }
+.menu-view .menu-detail__actions .menu-pill { margin-inline-start: auto; }
 
 .menu-view .menu-detail__status p { margin: 0; font-size: .78rem; }
 .menu-view .menu-detail__status p:first-child { font-size: .86rem; font-weight: 600; }

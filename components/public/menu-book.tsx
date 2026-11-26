@@ -73,19 +73,17 @@ function DishDetails({
           <div className="menu-detail__arch">
             <PhotoSlot asset={asset} priority={initial} sizes="(max-width: 63.99rem) calc(100vw - 72px), 540px" />
           </div>
-          <figcaption>
-            Иллюстративная фотография
-            {dish.photo === "polenta" && (
-              <> · полента с грибами, <a href="https://commons.wikimedia.org/wiki/File:Polenta_con_i_funghi_(49653224713).jpg">やましこ</a> / <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a> · WebP, уменьшено</>
-            )}
-            {dish.photo === "ricePorridge" && <> · на фото каша с малиной</>}
-          </figcaption>
+          {dish.photo === "polenta" && (
+            <figcaption>
+              <a href="https://commons.wikimedia.org/wiki/File:Polenta_con_i_funghi_(49653224713).jpg">Polenta con i funghi, やましこ</a> / <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a> · WebP, уменьшено
+            </figcaption>
+          )}
         </figure>
       )}
       <div className="menu-detail__copy">
         <p className="menu-detail__category">{menuCategories[dish.category]}</p>
         <h2 id="menu-dish-title">{dish.title}</h2>
-        <p className="menu-detail__description">{dish.detail}</p>
+        {dish.detail && <p className="menu-detail__description">{dish.detail}</p>}
         {hasDetails && (
           <dl className="menu-detail__facts">
             {dish.ingredients !== null && <div><dt>Состав</dt><dd>{dish.ingredients.join(", ")}</dd></div>}
@@ -94,10 +92,12 @@ function DishDetails({
           </dl>
         )}
         <div className="menu-detail__actions">
-          <div className="menu-detail__status">
-            <p>{dishPrice(dish.priceKopecks)}</p>
-            <p>{availabilityLabels[dish.availability]}</p>
-          </div>
+          {(dish.priceKopecks !== null || availabilityLabels[dish.availability]) && (
+            <div className="menu-detail__status">
+              {dish.priceKopecks !== null && <p>{dishPrice(dish.priceKopecks)}</p>}
+              {availabilityLabels[dish.availability] && <p>{availabilityLabels[dish.availability]}</p>}
+            </div>
+          )}
           <button
             type="button"
             className="menu-pill menu-pill--ink"
@@ -128,7 +128,7 @@ function MenuSelection({ selection }: { selection: ReturnType<typeof selectionSu
               <li key={id}>
                 <div>
                   <strong>{dish?.title ?? "Блюдо снято с меню"}</strong>
-                  <p>{unavailable ? "Недоступно" : dishPrice(price)}</p>
+                  {(unavailable || price !== null) && <p>{unavailable ? "Недоступно" : dishPrice(price)}</p>}
                   {priceChanged && <p>Цена изменилась</p>}
                   {availabilityChanged && !unavailable && <p>Наличие изменилось</p>}
                 </div>
@@ -153,11 +153,12 @@ function MenuSelection({ selection }: { selection: ReturnType<typeof selectionSu
               </li>
             ))}
           </ul>
-          <div className="menu-selection__summary" aria-live="polite">
-            {selection.priced > 0 && <p>{selection.missingPrice || selection.unavailable ? "Сумма по известным ценам" : "Итого"} <strong>{dishPrice(selection.total)}</strong></p>}
-            {selection.missingPrice > 0 && <p>Порций с неуточнённой ценой: {selection.missingPrice}</p>}
-            {selection.unavailable > 0 && <p>Недоступных порций: {selection.unavailable}</p>}
-          </div>
+          {(selection.priced > 0 || selection.unavailable > 0) && (
+            <div className="menu-selection__summary" aria-live="polite">
+              {selection.priced > 0 && <p>{selection.missingPrice || selection.unavailable ? "Сумма по известным ценам" : "Итого"} <strong>{dishPrice(selection.total)}</strong></p>}
+              {selection.unavailable > 0 && <p>Недоступных порций: {selection.unavailable}</p>}
+            </div>
+          )}
         </>
       )}
     </PreviewDialog>
@@ -210,7 +211,6 @@ export function MenuBook({ kind }: { kind: MenuKind }) {
             ))}
           </nav>
           <h1 id="menu-title" tabIndex={-1}>{book.title}</h1>
-          {kind === "breakfast" && <p className="menu-hours">{directory.breakfastHours} · время подачи уточняется</p>}
           <div className="menu-search" role="search" aria-label="Поиск по меню">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" width="19" height="19"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.25 15.25 5 5" /></svg>
             <input
@@ -256,9 +256,10 @@ export function MenuBook({ kind }: { kind: MenuKind }) {
               <button type="button" onClick={() => updateMenuLocation({ category: "", q: "", dish: "" })}>Сбросить поиск и фильтр</button>
             </div>
           )}
-          <p className="menu-source">
-            Демонстрационная подборка по данным <a href={directory.href}>edagda</a>. Актуальное меню и сведения об аллергенах уточняйте в ресторане.
-          </p>
+          <PreviewDialog title="Источники" trigger="Источники" className="menu-source">
+            <p>Названия и описания блюд по данным <a href={directory.href}>{directory.name}</a>.</p>
+            <p>Фотографии из Pexels, Unsplash и Wikimedia Commons показывают примеры подачи.</p>
+          </PreviewDialog>
         </section>
         <div className="menu-spread">
           {desktop && (active ? details(active) : (

@@ -5,8 +5,8 @@ import "./globals.css";
 import "./cover.css";
 
 export const metadata: Metadata = {
-  title: "Вместо Кекса — гастробистро в Ставрополе",
-  description: "Локальный прототип сайта гастробистро «Вместо Кекса».",
+  title: "Ресторан «Вместо Кекса» в Ставрополе",
+  description: "Меню, завтраки и контакты ресторана «Вместо Кекса» в Ставрополе.",
   icons: { icon: "data:," },
   robots: { index: false, follow: false },
 };

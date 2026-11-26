@@ -39,7 +39,7 @@ export function Hero({ variant }: { variant: CoverVariant }) {
       <div className="container hero-inner">
         <div className="hero-stage grid">
           <div className="hero-title">
-            <p className="eyebrow hero-eyebrow"><span>Гастробистро</span><span>Ставрополь</span></p>
+            <p className="eyebrow hero-eyebrow"><span>Ресторан</span><span>Ставрополь</span></p>
             <h1 id="hero-title">
               {isCinema ? (
                 <>
@@ -53,7 +53,6 @@ export function Hero({ variant }: { variant: CoverVariant }) {
           </div>
           <figure className="hero-photo">
             <PhotoSlot asset={photos.hero} sizes={isCinema ? "100vw" : photos.hero.sizes} priority />
-            <figcaption>Иллюстративное фото интерьера</figcaption>
           </figure>
           <div className="hero-copy">
             <p className="hero-description">От первого кофе до ужина, за которым хочется задержаться.</p>
@@ -69,7 +68,6 @@ export function Hero({ variant }: { variant: CoverVariant }) {
         </div>
         <div className="hero-foot">
           <a href="#contacts" className="plain-action">Ул. {directory.address}</a>
-          <span>Демонстрационная версия</span>
         </div>
       </div>
     </section>

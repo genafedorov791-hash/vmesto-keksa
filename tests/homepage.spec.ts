@@ -190,7 +190,8 @@ for (const { path, style, label, viewports } of covers) {
         const title = (await page.locator(".hero h1").boundingBox())!;
         expect(title.y + title.height).toBeLessThan(image.y);
       }
-      await expect(page.getByText("Иллюстративное фото интерьера", { exact: true })).toBeVisible();
+      await expect(page.locator(".hero").getByText("Ресторан", { exact: true })).toBeVisible();
+      await expect(page.locator(".hero figcaption")).toHaveCount(0);
 
       for (const id of requiredSections) await expect(page.locator(`#${id}`)).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
@@ -198,11 +199,7 @@ for (const { path, style, label, viewports } of covers) {
       const contacts = page.locator("#contacts");
       await expect(contacts.locator('a[href="tel:+79064640508"]')).toBeVisible();
       await expect(contacts.getByText(/Дзержинского.{0,4}133/i)).toBeVisible();
-      await expect(contacts.getByText(/требуется подтверждение/i)).toBeVisible();
-      await expect(contacts.getByRole("link", { name: "edagda" })).toHaveAttribute(
-        "href",
-        "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
-      );
+      await expect(contacts.getByRole("button", { name: "Источники" })).toBeVisible();
 
       await expectHomepagePhotosLoaded(page);
 
@@ -334,12 +331,8 @@ test("подробности блюда на главной доступны б�
     await expect(card.getByRole("button")).toHaveCount(1);
     await expect(dishButtons[index].getByRole("img")).toBeVisible();
   }
-  for (const status of ["Цена уточняется", "Наличие уточняется"]) {
-    const statuses = menu.locator(".dish-grid").getByText(status, { exact: true });
-    await expect(statuses).toHaveCount(featuredNames.length);
-    for (const text of await statuses.all()) await expect(text).toBeVisible();
-  }
-  await expect(menu.getByText(/фотографии иллюстративные/i)).toBeVisible();
+  await expect(menu.locator(".dish-price, .dish-availability")).toHaveCount(0);
+  await expect(menu.getByText(/фотографии иллюстративные/i)).toHaveCount(0);
   if (process.env.CAPTURE_REVIEW === "1") await expectHomepagePhotosLoaded(page);
 
   const dish = dishButtons[0];
@@ -395,7 +388,7 @@ test("форма демонстрирует валидацию, шаги и за
   await section.getByRole("button", { name: "Пропустить", exact: true }).click();
   await expect(section.getByRole("heading", { name: "Как связаться с гостем?" })).toBeFocused();
 
-  const submit = section.getByRole("button", { name: "Завершить демонстрацию" });
+  const submit = section.getByRole("button", { name: "Завершить" });
   await expectAxePass(page);
   await submit.scrollIntoViewIfNeeded();
   await capture(page, "booking-interaction-390x844");
@@ -403,13 +396,12 @@ test("форма демонстрирует валидацию, шаги и за
   await expect(section.getByLabel("Имя", { exact: true })).toBeFocused();
   await expect(section.getByLabel("Телефон", { exact: true })).toHaveAttribute("aria-invalid", "true");
   await expectAxePass(page);
-  await section.getByRole("button", { name: "Подставить тестовые данные" }).click();
+  await section.getByRole("button", { name: "Заполнить пример" }).click();
   await submit.click();
   await expect(section.getByText("Подтвердите использование тестовых данных.")).toBeVisible();
   await section.getByRole("checkbox", { name: "Я использую только тестовые данные" }).check();
   await submit.click();
-  await expect(section.getByRole("heading", { name: "Демонстрация завершена" })).toBeVisible();
-  await expect(section.getByText(/не отправлен/).first()).toBeVisible();
+  await expect(section.getByRole("heading", { name: "Заявка не отправлена" })).toBeVisible();
   expect(writes).toEqual([]);
   expect(await page.evaluate(() => [localStorage.length, sessionStorage.length])).toEqual([0, 0]);
   await section.getByRole("button", { name: "Начать заново" }).click();
@@ -465,9 +457,16 @@ test.describe("мобильная безопасная область", () => {
       expect(box && box.y + box.height).toBeLessThanOrEqual(844 - safeAreaBottom + 1);
     }
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    const footerButton = page.getByRole("button", { name: "Политика и согласие" });
+    const footerButton = page.getByRole("button", { name: "Источники" });
     await expect(footerButton).toBeInViewport();
-    await footerButton.click({ trial: true });
+    await footerButton.click();
+    const sources = page.getByRole("dialog", { name: "Источники" });
+    await expect(sources.getByRole("link", { name: "edagda" })).toHaveAttribute(
+      "href",
+      "https://edagda.ru/stavropol/restaurant/vmesto-keksa",
+    );
+    await page.keyboard.press("Escape");
+    await expect(footerButton).toBeFocused();
     await expectNoHorizontalOverflow(page);
   });
 });
