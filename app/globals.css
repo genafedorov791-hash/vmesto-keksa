@@ -12,7 +12,6 @@
   --line-light: rgb(100 76 53 / 35%);
   --line-dark: rgb(214 196 165 / 38%);
   --intro-sand: #dac8ac;
-  --breakfast-linen: #e1d2b9;
   --booking-olive: #29372d;
   --control-ease: 220ms ease;
   --font-display: "Cormorant Garamond", "Times New Roman", serif;
@@ -249,21 +248,37 @@ figcaption, .picture-note {
   to { transform: translateY(0); }
 }
 
+/* Adjacent backgrounds share an endpoint, with the tonal changes distributed across both sections. */
+.site-frame {
+  --cover-exit: #263327;
+  --menu-entry: #70634b;
+  --menu-exit: #8b785e;
+  --morning-edge: #c6b491;
+  --gallery-entry: #beb38f;
+  --gallery-exit: #324135;
+  background-color: var(--cover-ink);
+}
+
 .introduction {
+  --menu-approach: linear-gradient(0deg, var(--menu-entry), #78694f 0.8rem, #b7a689 3.15rem,
+    transparent clamp(6rem, 12vw, 11rem));
   background-color: var(--intro-sand);
-  background-image: linear-gradient(180deg, var(--linen), var(--intro-sand) 90%);
+  background-image:
+    var(--menu-approach),
+    linear-gradient(180deg, var(--linen), var(--intro-sand) 69%);
 }
 
 .site-frame--cinema .introduction {
   padding-block-start: clamp(1.4rem, 2.45vw, 2.25rem);
-  background-image: linear-gradient(180deg,
-    var(--cover-ink),
-    var(--olive) 20%,
-    var(--sage) 49%,
-    var(--intro-sand) 96%
-  );
-  background-repeat: no-repeat;
-  background-size: 100% clamp(15rem, 29vw, 27rem);
+  background-image:
+    var(--menu-approach),
+    linear-gradient(180deg,
+      var(--cover-exit),
+      var(--olive) clamp(2.3rem, 6vw, 5.5rem),
+      var(--sage) clamp(6.25rem, 14vw, 12.5rem),
+      #c0b69a clamp(11.5rem, 20vw, 17.5rem),
+      var(--intro-sand) 84%
+    );
 }
 
 .site-frame--cinema .intro-room {
@@ -331,58 +346,87 @@ figcaption, .picture-note {
 }
 
 .gastronomy {
-  padding-block-start: 0;
-  background-color: var(--linen);
-  background-image: linear-gradient(180deg,
-    var(--intro-sand),
-    var(--linen) 16%,
-    #efe4d2 38%,
-    var(--linen) 75%,
-    var(--breakfast-linen)
-  );
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  color: #f3e5cd;
+  background:
+    linear-gradient(180deg, var(--menu-entry), transparent clamp(6.25rem, 12vw, 12rem)),
+    linear-gradient(0deg, var(--menu-exit), transparent clamp(7.5rem, 14vw, 13rem)),
+    radial-gradient(ellipse at 16% 84%, #524329 0%, transparent 41%),
+    radial-gradient(ellipse at 14% 16%, #403a25 0%, transparent 43%),
+    radial-gradient(ellipse at 90% 43%, #343120 0%, transparent 45%),
+    #181e15;
+}
+
+.gastronomy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 5% 0 5%;
+  background:
+    linear-gradient(146deg, transparent 4%, rgb(200 166 98 / 15%) 15%, transparent 23%),
+    linear-gradient(33deg, transparent 11%, rgb(220 191 121 / 12%) 17%, transparent 28%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.gastronomy::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: auto -2% 5% 51%;
+  height: 24%;
+  background: url("/assets/photos/gallery-table.webp") center 62% / cover;
+  filter: blur(7px) sepia(0.3);
+  opacity: 0.46;
+  mask-image:
+    radial-gradient(ellipse at 96% 100%, black 15%, transparent 70%),
+    linear-gradient(180deg, black 72%, transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+.gastronomy-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 2.12fr);
+  align-items: start;
+  gap: clamp(1.2rem, 2.6vw, 2.7rem);
 }
 
 .gastronomy-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-  border-block-start: 1px solid var(--line-light);
-  padding-block: clamp(1.9rem, 4.4vw, 3.9rem) clamp(1.75rem, 4vw, 3.3rem);
+  padding-block-start: clamp(2rem, 9vw, 9rem);
 }
 
-.gastronomy-heading .eyebrow { color: var(--earth-text); }
-.gastronomy-heading h2 { margin-block-start: 0.55rem; }
+.gastronomy-heading::before {
+  content: "";
+  display: block;
+  width: 38%;
+  height: 1px;
+  margin-block-end: clamp(1rem, 2.5vw, 2.5rem);
+  background: linear-gradient(90deg, #d4ad79, transparent);
+}
+
+.gastronomy-heading h2 {
+  font-size: clamp(2.75rem, 4.75vw, 5rem);
+}
 
 .preview-note {
-  max-width: 24rem;
-  border-inline-start: 1px solid var(--brass);
-  padding-inline-start: 1rem;
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  margin-block-start: 1.1rem;
+  color: #e2cfb0;
+  font-size: 0.875rem;
 }
 
-.dish-grid { align-items: start; }
+.gastronomy-action { margin-block-start: clamp(1.25rem, 3vw, 2.8rem); }
+.gastronomy-action .button { width: min(100%, 21rem); }
+
+.dish-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: clamp(0.85rem, 1.35vw, 1.35rem);
+}
+
 .dish-item { min-width: 0; }
-
-.dish-item:nth-child(1) { grid-area: 1 / 1 / 3 / 8; }
-.dish-item:nth-child(2) {
-  grid-area: 1 / 8 / 2 / -1;
-  margin-block-start: clamp(1rem, 3vw, 2.6rem);
-}
-
-.dish-item:nth-child(3) { grid-area: 2 / 8 / 3 / 11; }
-.dish-item:nth-child(4) { grid-area: 2 / 11 / 3 / -1; margin-block-start: 2.35rem; }
-
-.dish-photo { aspect-ratio: 1.19; }
-.dish-item:nth-child(1) .dish-photo {
-  aspect-ratio: 1.32;
-  box-shadow: 0 0.35rem 0 color-mix(in srgb, var(--brass) 44%, var(--linen));
-}
-.dish-item:nth-child(2) .dish-photo { aspect-ratio: 0.99; }
-.dish-item:nth-child(3) .dish-photo { aspect-ratio: 1.16; }
-.dish-item:nth-child(4) .dish-photo { aspect-ratio: 0.91; }
 
 .dish-trigger {
   display: grid;
@@ -394,57 +438,80 @@ figcaption, .picture-note {
   text-align: start;
 }
 
-.dish-item:nth-child(2) .dish-trigger {
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(0.7rem, 1.75vw, 1.5rem);
+.dish-photo {
+  aspect-ratio: 1.14;
+  border: 1px solid #b68953;
+  border-radius: clamp(1.5rem, 4vw, 4rem);
 }
 
+.dish-item:first-child .dish-photo { border-radius: 50% 50% 0 0 / 40% 40% 0 0; }
+.dish-item:nth-child(2) .dish-photo { border-bottom-left-radius: 0; }
+
 .dish-trigger:is(:hover, :focus-visible) .dish-title {
-  color: var(--earth-text);
-  text-decoration-color: currentColor;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
 
 .dish-trigger:is(:hover, :focus-visible) .dish-photo img,
 .gallery-item:is(:hover, :focus-visible) .photo img { scale: 1.035; }
 
-.dish-caption {
-  display: block;
-  border-block-end: 1px solid var(--line-light);
-  padding-block: 0.85rem 0.9rem;
-}
-
+.dish-caption { display: block; }
 .dish-caption > span { display: block; }
 
-.dish-category, .dish-price {
-  color: var(--earth-text);
-  font-size: 0.75rem;
-  font-weight: 580;
-}
-
-.dish-category {
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
 .dish-title {
-  margin: 0.15rem 0 0.2rem;
-  font: 600 clamp(1.55rem, 2.48vw, 2.4rem)/1.02 var(--font-display);
-  letter-spacing: -0.029em;
-  text-decoration: underline;
-  text-decoration-color: var(--line-light);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.15em;
+  margin-block-end: 0.35rem;
+  font: 600 clamp(1.45rem, 2.25vw, 2.35rem)/1 var(--font-display);
+  letter-spacing: -0.025em;
+  overflow-wrap: break-word;
 }
 
-.dish-item:first-child .dish-title { font-size: clamp(2rem, 4.5vw, 4rem); }
-.dish-description { font-size: 0.875rem; line-height: 1.5; }
-.dish-price { margin-block-start: 0.5rem; }
-.dish-availability { font-size: 0.75rem; }
+.dish-description { font-size: 0.875rem; line-height: 1.45; }
+.dish-price { margin-block-start: 0.65rem; }
+.dish-price::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  margin: 0 auto 0.4rem 0;
+  background: #b68953;
+}
+.dish-price, .dish-availability { color: #e2cfb0; font-size: 0.75rem; }
+.dish-item:first-child .dish-caption { text-align: center; }
+.dish-item:first-child .dish-price::before { margin-inline: auto; }
 
-.gastronomy-action {
-  margin-block-start: clamp(1.2rem, 3vw, 2.4rem);
-  text-align: end;
+@media (width > 48rem) {
+  .dish-item:first-child,
+  .dish-item:first-child .dish-trigger {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+
+  .dish-item:first-child .dish-photo {
+    grid-row: span 2;
+    aspect-ratio: auto;
+  }
+
+  .dish-item:not(:first-child) .dish-trigger {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(0.65rem, 1.4vw, 1.4rem);
+  }
+
+  .dish-item:not(:first-child) .dish-photo { min-height: 100%; }
+}
+
+@media (max-width: 64rem) {
+  .gastronomy-layout { grid-template-columns: 1fr; }
+  .gastronomy-heading { padding-block-start: 0; }
+}
+
+@media (max-width: 48rem) {
+  .dish-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dish-item:first-child { grid-column: 1 / -1; }
+  .dish-trigger { gap: 0.75rem; }
+  .dish-item:first-child .dish-photo { aspect-ratio: 0.98; }
 }
 
 .preview-menu {
@@ -476,9 +543,19 @@ figcaption, .picture-note {
 .preview-menu__price, .dish-dialog-status { color: var(--earth-text); }
 
 .breakfast {
+  --first-light: clamp(3.25rem, 9vw, 7.5rem);
   padding-block-start: 0;
-  background-color: var(--breakfast-linen);
-  background-image: linear-gradient(180deg, var(--breakfast-linen) 12%, var(--sand));
+  background-color: var(--morning-edge);
+  background-image:
+    radial-gradient(ellipse 65% 42% at 32% 48%, rgb(232 202 155 / 36%), transparent),
+    linear-gradient(180deg,
+      var(--menu-exit),
+      #957f63 0.85rem,
+      #c1ac8a var(--first-light),
+      #d9c5a3 42%,
+      #cfbb99 70%,
+      var(--morning-edge)
+    );
 }
 
 .breakfast-grid {
@@ -522,7 +599,10 @@ figcaption, .picture-note {
 
 .breakfast-hours span { font-size: 0.8125rem; font-weight: 400; }
 
-.atmosphere { background: var(--sand); }
+.atmosphere {
+  background-color: var(--gallery-entry);
+  background-image: linear-gradient(180deg, var(--morning-edge), var(--gallery-entry) clamp(6rem, 11vw, 9rem));
+}
 
 .atmosphere-heading {
   display: flex;
@@ -541,15 +621,16 @@ figcaption, .picture-note {
 
 .atmosphere-gallery {
   padding-block-end: clamp(2.75rem, 5vw, 4.5rem);
-  background-color: var(--olive);
-  background-image: linear-gradient(180deg,
-    var(--sand),
-    var(--sage) 25%,
-    #67745f 47%,
-    var(--olive) 86%
-  );
-  background-size: 100% clamp(13rem, 25vw, 22rem);
-  background-repeat: no-repeat;
+  background-color: var(--gallery-exit);
+  background-image:
+    radial-gradient(ellipse 55% 28% at 73% 59%, rgb(155 158 132 / 12%), transparent),
+    linear-gradient(180deg,
+      var(--gallery-entry),
+      var(--sage) clamp(2.4rem, 7vw, 6.3rem),
+      #606b55 clamp(8.5rem, 22vw, 19.8rem),
+      var(--olive) 69%,
+      var(--gallery-exit)
+    );
 }
 
 .gallery-grid {
@@ -593,7 +674,9 @@ figcaption, .picture-note {
 .booking {
   padding-block-start: clamp(1.6rem, 4.6vw, 4.3rem);
   background-color: var(--booking-olive);
-  background-image: linear-gradient(180deg, var(--olive), var(--booking-olive));
+  background-image:
+    radial-gradient(ellipse 52% 45% at 25% 49%, rgb(155 158 132 / 9%), transparent),
+    linear-gradient(180deg, var(--gallery-exit), #2d3c31 57%, var(--booking-olive));
 }
 
 .booking-copy .eyebrow, .contacts-copy .eyebrow { color: var(--sand); }
@@ -613,7 +696,7 @@ figcaption, .picture-note {
 .contacts {
   padding-block: 0 1.6rem;
   background-color: var(--cover-ink);
-  background-image: linear-gradient(180deg, var(--booking-olive), var(--cover-ink));
+  background-image: linear-gradient(180deg, var(--booking-olive), #213027 56%, var(--cover-ink));
 }
 
 .contacts-grid {
@@ -775,7 +858,7 @@ figcaption, .picture-note {
 
   h2 { font-size: clamp(2.55rem, 8.3vw, 3.85rem); }
 
-  .intro-grid, .dish-grid, .breakfast-grid, .booking-grid, .contacts-grid {
+  .intro-grid, .breakfast-grid, .booking-grid, .contacts-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -817,15 +900,8 @@ figcaption, .picture-note {
 
   .site-frame--cinema .intro-copy { grid-area: 2 / 1 / 3 / -1; }
 
-  .gastronomy-heading { align-items: start; }
-  .dish-grid { row-gap: 1.55rem; }
-  .dish-item:nth-child(1) { grid-area: 1 / 1 / 2 / -1; }
-  .dish-item:nth-child(2) { grid-area: 2 / 1 / 3 / -1; margin-block-start: 0; }
-  .dish-item:nth-child(3) { grid-area: 3 / 1 / 4 / 2; }
-  .dish-item:nth-child(4) { grid-area: 3 / 2 / 4 / -1; margin-block-start: 2.15rem; }
-  .dish-item:nth-child(2) .dish-photo { aspect-ratio: 0.95; }
-  .dish-item:nth-child(3) .dish-photo { aspect-ratio: 0.88; }
-  .dish-item:nth-child(4) .dish-photo { aspect-ratio: 1.13; }
+
+  .breakfast { --first-light: 2.05rem; }
 
   .breakfast-copy { grid-row: 1; margin-block-end: 0.2rem; }
   .breakfast-photo { grid-row: 2; margin-inline-end: 0.6rem; }
@@ -843,9 +919,6 @@ figcaption, .picture-note {
 }
 
 @media (max-width: 22rem) {
-  .dish-title { font-size: 1.55rem; }
-  .dish-item:nth-child(2) .dish-trigger { grid-template-columns: 1fr; gap: 0; }
-  .dish-item:nth-child(2) .dish-photo { aspect-ratio: 1.54; }
   .preview-menu li { gap: 0.45rem; }
 }
 
