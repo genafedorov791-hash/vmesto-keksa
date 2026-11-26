@@ -12,7 +12,6 @@
   --line-light: rgb(100 76 53 / 35%);
   --line-dark: rgb(214 196 165 / 38%);
   --intro-sand: #dac8ac;
-  --breakfast-linen: #e1d2b9;
   --booking-olive: #29372d;
   --control-ease: 220ms ease;
   --font-display: "Cormorant Garamond", "Times New Roman", serif;
@@ -249,21 +248,37 @@ figcaption, .picture-note {
   to { transform: translateY(0); }
 }
 
+/* Adjacent backgrounds share an endpoint, with the tonal changes distributed across both sections. */
+.site-frame {
+  --cover-exit: #263327;
+  --menu-entry: #70634b;
+  --menu-exit: #8b785e;
+  --morning-edge: #c6b491;
+  --gallery-entry: #beb38f;
+  --gallery-exit: #324135;
+  background-color: var(--cover-ink);
+}
+
 .introduction {
+  --menu-approach: linear-gradient(0deg, var(--menu-entry), #78694f 0.8rem, #b7a689 3.15rem,
+    transparent clamp(6rem, 12vw, 11rem));
   background-color: var(--intro-sand);
-  background-image: linear-gradient(180deg, var(--linen), var(--intro-sand) 90%);
+  background-image:
+    var(--menu-approach),
+    linear-gradient(180deg, var(--linen), var(--intro-sand) 69%);
 }
 
 .site-frame--cinema .introduction {
   padding-block-start: clamp(1.4rem, 2.45vw, 2.25rem);
-  background-image: linear-gradient(180deg,
-    var(--cover-ink),
-    var(--olive) 20%,
-    var(--sage) 49%,
-    var(--intro-sand) 96%
-  );
-  background-repeat: no-repeat;
-  background-size: 100% clamp(15rem, 29vw, 27rem);
+  background-image:
+    var(--menu-approach),
+    linear-gradient(180deg,
+      var(--cover-exit),
+      var(--olive) clamp(2.3rem, 6vw, 5.5rem),
+      var(--sage) clamp(6.25rem, 14vw, 12.5rem),
+      #c0b69a clamp(11.5rem, 20vw, 17.5rem),
+      var(--intro-sand) 84%
+    );
 }
 
 .site-frame--cinema .intro-room {
@@ -336,7 +351,8 @@ figcaption, .picture-note {
   overflow: clip;
   color: #f3e5cd;
   background:
-    linear-gradient(var(--intro-sand), transparent 5%, transparent 94%, var(--breakfast-linen)),
+    linear-gradient(180deg, var(--menu-entry), transparent clamp(6.25rem, 12vw, 12rem)),
+    linear-gradient(0deg, var(--menu-exit), transparent clamp(7.5rem, 14vw, 13rem)),
     radial-gradient(ellipse at 16% 84%, #524329 0%, transparent 41%),
     radial-gradient(ellipse at 14% 16%, #403a25 0%, transparent 43%),
     radial-gradient(ellipse at 90% 43%, #343120 0%, transparent 45%),
@@ -364,7 +380,10 @@ figcaption, .picture-note {
   background: url("/assets/photos/gallery-table.webp") center 62% / cover;
   filter: blur(7px) sepia(0.3);
   opacity: 0.46;
-  mask-image: radial-gradient(ellipse at 96% 100%, black 15%, transparent 70%);
+  mask-image:
+    radial-gradient(ellipse at 96% 100%, black 15%, transparent 70%),
+    linear-gradient(180deg, black 72%, transparent);
+  mask-composite: intersect;
   pointer-events: none;
 }
 
@@ -524,9 +543,19 @@ figcaption, .picture-note {
 .preview-menu__price, .dish-dialog-status { color: var(--earth-text); }
 
 .breakfast {
+  --first-light: clamp(3.25rem, 9vw, 7.5rem);
   padding-block-start: 0;
-  background-color: var(--breakfast-linen);
-  background-image: linear-gradient(180deg, var(--breakfast-linen) 12%, var(--sand));
+  background-color: var(--morning-edge);
+  background-image:
+    radial-gradient(ellipse 65% 42% at 32% 48%, rgb(232 202 155 / 36%), transparent),
+    linear-gradient(180deg,
+      var(--menu-exit),
+      #957f63 0.85rem,
+      #c1ac8a var(--first-light),
+      #d9c5a3 42%,
+      #cfbb99 70%,
+      var(--morning-edge)
+    );
 }
 
 .breakfast-grid {
@@ -570,7 +599,10 @@ figcaption, .picture-note {
 
 .breakfast-hours span { font-size: 0.8125rem; font-weight: 400; }
 
-.atmosphere { background: var(--sand); }
+.atmosphere {
+  background-color: var(--gallery-entry);
+  background-image: linear-gradient(180deg, var(--morning-edge), var(--gallery-entry) clamp(6rem, 11vw, 9rem));
+}
 
 .atmosphere-heading {
   display: flex;
@@ -589,15 +621,16 @@ figcaption, .picture-note {
 
 .atmosphere-gallery {
   padding-block-end: clamp(2.75rem, 5vw, 4.5rem);
-  background-color: var(--olive);
-  background-image: linear-gradient(180deg,
-    var(--sand),
-    var(--sage) 25%,
-    #67745f 47%,
-    var(--olive) 86%
-  );
-  background-size: 100% clamp(13rem, 25vw, 22rem);
-  background-repeat: no-repeat;
+  background-color: var(--gallery-exit);
+  background-image:
+    radial-gradient(ellipse 55% 28% at 73% 59%, rgb(155 158 132 / 12%), transparent),
+    linear-gradient(180deg,
+      var(--gallery-entry),
+      var(--sage) clamp(2.4rem, 7vw, 6.3rem),
+      #606b55 clamp(8.5rem, 22vw, 19.8rem),
+      var(--olive) 69%,
+      var(--gallery-exit)
+    );
 }
 
 .gallery-grid {
@@ -641,7 +674,9 @@ figcaption, .picture-note {
 .booking {
   padding-block-start: clamp(1.6rem, 4.6vw, 4.3rem);
   background-color: var(--booking-olive);
-  background-image: linear-gradient(180deg, var(--olive), var(--booking-olive));
+  background-image:
+    radial-gradient(ellipse 52% 45% at 25% 49%, rgb(155 158 132 / 9%), transparent),
+    linear-gradient(180deg, var(--gallery-exit), #2d3c31 57%, var(--booking-olive));
 }
 
 .booking-copy .eyebrow, .contacts-copy .eyebrow { color: var(--sand); }
@@ -661,7 +696,7 @@ figcaption, .picture-note {
 .contacts {
   padding-block: 0 1.6rem;
   background-color: var(--cover-ink);
-  background-image: linear-gradient(180deg, var(--booking-olive), var(--cover-ink));
+  background-image: linear-gradient(180deg, var(--booking-olive), #213027 56%, var(--cover-ink));
 }
 
 .contacts-grid {
@@ -865,6 +900,8 @@ figcaption, .picture-note {
 
   .site-frame--cinema .intro-copy { grid-area: 2 / 1 / 3 / -1; }
 
+
+  .breakfast { --first-light: 2.05rem; }
 
   .breakfast-copy { grid-row: 1; margin-block-end: 0.2rem; }
   .breakfast-photo { grid-row: 2; margin-inline-end: 0.6rem; }

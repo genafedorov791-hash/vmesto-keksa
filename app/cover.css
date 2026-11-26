@@ -188,7 +188,7 @@
 .hero--cinema {
   position: relative;
   color: var(--milk);
-  background: var(--cover-ink);
+  background: linear-gradient(180deg, var(--cover-ink) 48%, var(--cover-exit));
 }
 
 .hero--cinema .hero-inner {

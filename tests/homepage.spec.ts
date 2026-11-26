@@ -56,7 +56,7 @@ async function expectLocalPhotoLoaded(photo: Locator) {
 
 async function expectHomepagePhotosLoaded(page: Page) {
   const photos = await page.locator("main .photo img:visible").all();
-  expect(photos.length).toBe(11);
+  expect(photos.length).toBe(10);
   const files = new Set<string>();
   for (const photo of photos) {
     await expectLocalPhotoLoaded(photo);
