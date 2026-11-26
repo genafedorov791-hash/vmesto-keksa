@@ -78,6 +78,22 @@ export const photos = {
     focus: "60% 55%",
     mobileFocus: "61% 55%",
   },
+  polenta: {
+    src: "/assets/photos/breakfast-polenta.webp",
+    alt: "Полента с грибами и зеленью в расписной тарелке",
+    width: 1280,
+    height: 853,
+    sizes: "(max-width: 63.99rem) calc(100vw - 72px), 540px",
+    focus: "50% 50%",
+  },
+  ricePorridge: {
+    src: "/assets/photos/breakfast-rice-porridge.webp",
+    alt: "Рисовая каша с малиной в керамической миске",
+    width: 1280,
+    height: 853,
+    sizes: "(max-width: 63.99rem) calc(100vw - 72px), 540px",
+    focus: "57% 50%",
+  },
   galleryRoom: {
     src: "/assets/photos/gallery-daylight.webp",
     alt: "Деревянные столы и кресла вдоль панорамных окон",

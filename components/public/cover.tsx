@@ -61,7 +61,7 @@ export function Hero({ variant }: { variant: CoverVariant }) {
               <a href="#booking" className={`button button--arrow ${actionTone}`}>
                 <span>Забронировать столик</span><ActionArrow />
               </a>
-              <a href="#menu" className={`button button--arrow button--quiet ${actionTone}`}>
+              <a href="/menu" className={`button button--arrow button--quiet ${actionTone}`}>
                 <span>Смотреть меню</span><ActionArrow />
               </a>
             </div>
@@ -80,7 +80,7 @@ export function MobileDock() {
   return (
     <nav className="mobile-dock" aria-label="Быстрые действия">
       <a className="mobile-dock__action" href={directory.phoneHref}>Позвонить</a>
-      <a href="#menu" className="mobile-dock__action">Меню</a>
+      <a href="/menu" className="mobile-dock__action">Меню</a>
       <a href="#booking" className="mobile-dock__action mobile-dock__booking">Бронь <ActionArrow /></a>
     </nav>
   );

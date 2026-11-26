@@ -4,7 +4,8 @@ import { Hero, MobileDock, SiteHeader, type CoverVariant } from "./cover";
 import { photos } from "./photo-assets";
 import { PhotoSlot } from "./photo-slot";
 import { AtmosphereGallery, PreviewDialog } from "./prototype-dialog";
-import { directory, dishPrice, featuredPreview } from "./site-content";
+import { availabilityLabels, dishPrice, menuDishes } from "./menu-catalog";
+import { directory } from "./site-content";
 
 function Introduction() {
   return (
@@ -33,41 +34,31 @@ function Gastronomy() {
           <h2 id="menu-title">Гастрономия</h2>
           <p className="preview-note">Фотографии иллюстративные.</p>
           <div className="gastronomy-action">
-            <PreviewDialog title="Меню" className="button button--light button--arrow" trigger={<><span>Открыть меню</span><ActionArrow /></>}>
-              <p>Демонстрационная подборка. Состав, цены и наличие подлежат подтверждению.</p>
-              <ul className="preview-menu">
-                {featuredPreview.map((dish) => (
-                  <li key={dish.id}>
-                    <span className="preview-menu__name">{dish.title}</span>
-                    <span className="preview-menu__price">{dishPrice(dish.priceKopecks)}</span>
-                  </li>
-                ))}
-              </ul>
-            </PreviewDialog>
+            <a href="/menu" className="button button--light button--arrow"><span>Смотреть всё меню</span><ActionArrow /></a>
           </div>
         </div>
         <div className="dish-grid">
-          {featuredPreview.slice(0, 3).map((dish) => (
+          {menuDishes.filter((dish) => dish.featuredOnHome).map((dish) => dish.photo && (
             <article className="dish-item" key={dish.id}>
               <PreviewDialog
                 title={dish.title}
                 className="dish-trigger"
                 trigger={
                   <>
-                    <PhotoSlot asset={photos[dish.id]} className="dish-photo" sizes={dish.id === "filet" ? "(max-width: 48rem) 90vw, (max-width: 64rem) 45vw, 30vw" : "(max-width: 48rem) 45vw, 22vw"} />
+                    <PhotoSlot asset={photos[dish.photo]} className="dish-photo" sizes={dish.id === "filet" ? "(max-width: 48rem) 90vw, (max-width: 64rem) 45vw, 30vw" : "(max-width: 48rem) 45vw, 22vw"} />
                     <span className="dish-caption">
                       <span className="dish-title">{dish.title}</span>
                       <span className="dish-description">{dish.description}</span>
                       <span className="dish-price">{dishPrice(dish.priceKopecks)}</span>
-                      <span className="dish-availability">{dish.availability}</span>
+                      <span className="dish-availability">{availabilityLabels[dish.availability]}</span>
                     </span>
                   </>
                 }
               >
-                <PhotoSlot asset={photos[dish.id]} sizes="(max-width: 44rem) 88vw, 36rem" />
+                <PhotoSlot asset={photos[dish.photo]} sizes="(max-width: 44rem) 88vw, 36rem" />
                 <p className="picture-note">Иллюстративная фотография</p>
                 <p>{dish.detail}</p>
-                <p className="dish-dialog-status">{dishPrice(dish.priceKopecks)} · {dish.availability}</p>
+                <p className="dish-dialog-status">{dishPrice(dish.priceKopecks)} · {availabilityLabels[dish.availability]}</p>
               </PreviewDialog>
             </article>
           ))}
@@ -90,10 +81,7 @@ function Breakfast() {
           <h2 id="breakfast-title">Начать день<br /><em>за столом</em></h2>
           <p className="section-copy">Скрэмбл с креветками, картофельной роти и кремом из авокадо.</p>
           <p className="breakfast-hours">{directory.breakfastHours} <span>· по данным edagda, уточняется</span></p>
-          <PreviewDialog title="Меню завтраков" className="button button--dark button--arrow button--quiet" trigger={<><span>Смотреть завтраки</span><ActionArrow /></>}>
-            <p>В edagda упоминаются скрэмбл с креветками, полента со шпинатом и страчателлой и рисовая каша с клубникой на кокосовом молоке.</p>
-            <p>Демонстрационная подборка. Точные часы подачи, состав, цены и наличие уточняются.</p>
-          </PreviewDialog>
+          <a href="/breakfast" className="button button--dark button--arrow button--quiet"><span>Смотреть завтраки</span><ActionArrow /></a>
         </div>
       </div>
     </section>
