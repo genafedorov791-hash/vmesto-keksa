@@ -1,5 +1,25 @@
 # Реестр материалов
 
+## Фирменные материалы для редизайна
+
+Меню, фирменная графика и фотографии получены от ресторана и используются в закрытой визуальной приёмке. В Git добавлены только подготовленные для сайта файлы. Оригиналы остаются у заказчика.
+
+| Локальный файл | Исходник | Использование |
+|---|---|---|
+| `restaurant/mark.png` | `кекс-инста.psd`, знак также сверен со `стикеры.eps` и печатным меню | Исходный контур знака с прозрачностью, используется в шапке и афише |
+| `restaurant/sugar-signature.webp` | `сахар.eps` | Оригинальная горизонтальная подпись в подвале главной |
+| `restaurant/hero*.webp` | `2026.09.30_Кекс.zip`, `@pyotrg_0065.jpg` и `@pyotrg_0066.jpg` | Первый экран. Горизонтальная и вертикальная съёмка одной подачи с заранее подготовленными вариантами ширины |
+| `restaurant/room.webp`, `restaurant/toast.webp` | `2026.07.02_Кекс.zip`, `@pyotrg_0107.jpg` и `@pyotrg_0112.jpg` | Галерея атмосферы |
+| `restaurant/omelette.webp`, `restaurant/syrniki.webp`, `restaurant/porridge.webp` | Сентябрь, 0065, 0082, 0040 | Омлет, сырники, рисовая каша |
+| `restaurant/bruschetta-beef.webp`, `restaurant/green-salad.webp` | Июль, 0053, 0030 | Брускетта с ростбифом, зелёный салат |
+| `restaurant/pea-soup.webp`, `restaurant/salmon.webp`, `restaurant/filet.webp` | Сентябрь, 0014, 0092, 0107 | Гороховый суп, стейк из сёмги, филе-миньон |
+| `restaurant/duck.webp`, `restaurant/chicken.webp` | Июль, 0022, 0081 | Утиная грудка магре, куриные котлеты |
+| `restaurant/event-preview.webp` | Июль, 0011 | Оформление тестового события |
+| `onest-cyrillic.woff2`, `onest-latin.woff2`, `OFL-Onest.txt` | [Onest, Google Fonts](https://github.com/google/fonts/tree/main/ofl/onest) | Локальный набор интерфейса, SIL OFL 1.1 |
+
+Блюда, выход, цены и примечание об аллергии сверены с обеими страницами `250x350-1.pdf`. Печатный заголовок выполнен Blacker Pro Condensed Display, для веб-заголовков сохранён Cormorant Garamond с подтверждённой лицензией. Кадры с уверенным совпадением добавлены к конкретным блюдам. Материалы из разделов ниже относятся к предыдущей версии.
+
+
 | Файл | Источник и назначение | Дата получения | Разрешение |
 |---|---|---|---|
 | [cormorant-cyrillic.woff2](https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKgS4.woff2), [cormorant-latin.woff2](https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2), [cormorant-italic-cyrillic.woff2](https://fonts.gstatic.com/s/cormorantgaramond/v21/co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtMmSq17w.woff2), [cormorant-italic-latin.woff2](https://fonts.gstatic.com/s/cormorantgaramond/v21/co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSo.woff2) | Google Fonts, Cormorant Garamond v21, переменные начертания для заголовков | 25.11.2026 | SIL Open Font License 1.1 |

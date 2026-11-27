@@ -7,12 +7,12 @@ import "./cover.css";
 export const metadata: Metadata = {
   title: "Ресторан «Вместо Кекса» в Ставрополе",
   description: "Меню, завтраки и контакты ресторана «Вместо Кекса» в Ставрополе.",
-  icons: { icon: "data:," },
+  icons: { icon: "/assets/restaurant/mark.png" },
   robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#17221B",
+  themeColor: "#F7F4EB",
   viewportFit: "cover",
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <link rel="preload" href="/assets/fonts/cormorant-cyrillic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/assets/fonts/cormorant-italic-cyrillic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/assets/fonts/golos-cyrillic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/assets/fonts/onest-cyrillic.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body>{children}</body>
     </html>

@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { availabilityLabels, dishPrice, filterMenuDishes, menuCategories, menuCollections, menuDishes, type MenuDish, type MenuKind } from "./menu-catalog";
+import {
+  allergyNote, dishesForMenu, dishPrice, dishTitle, filterMenuDishes, menuAdditions, menuCategories,
+  menuCollections, servingLabel, type MenuDish, type MenuKind,
+} from "./menu-catalog";
 import { getMenuSelection, maximumMenuQuantity, removeMenuChoice, selectionSummary, setMenuQuantity, subscribeMenuSelection } from "./menu-selection";
 import { photos } from "./photo-assets";
 import { PhotoSlot } from "./photo-slot";
 import { PreviewDialog } from "./prototype-dialog";
-import { directory } from "./site-content";
+import { SiteFooter, SiteHeader } from "./site-header";
 import "./menu-book.css";
 
-const desktopQuery = "(min-width: 64rem)";
+const desktopQuery = "(min-width: 62rem)";
 const menuEvent = "vmesto-keksa:menu-location";
 const dishPanelId = "menu-dish-panel";
 const closedDish = "closed";
@@ -49,74 +52,63 @@ function updateMenuLocation(changes: Record<string, string>, replace = false) {
   window.dispatchEvent(new Event(menuEvent));
 }
 
-function DishDetails({
-  dish,
-  close,
-  quantity,
-  initial,
-}: {
-  dish: MenuDish;
-  close: () => void;
-  quantity: number;
-  initial: boolean;
-}) {
-  const asset = dish.photo ? photos[dish.photo] : null;
-  const hasDetails = dish.ingredients !== null || dish.serving !== null || dish.allergens !== null;
+type Selection = ReturnType<typeof selectionSummary>;
+
+function DishDetails({ dish, close, selection }: { dish: MenuDish; close: () => void; selection: Selection }) {
+  const selected = selection.items.some(({ id }) => id === dish.id);
+  const additions = menuAdditions.filter(({ parentId }) => parentId === dish.id);
 
   return (
     <article id={dishPanelId} className="menu-detail" aria-labelledby="menu-dish-title">
-      <button className="menu-detail__close" type="button" onClick={close}>
-        <span aria-hidden="true">×</span> Закрыть блюдо
-      </button>
-      {asset && (
-        <figure className="menu-detail__figure">
-          <div className="menu-detail__arch">
-            <PhotoSlot asset={asset} priority={initial} sizes="(max-width: 63.99rem) calc(100vw - 72px), 540px" />
-          </div>
-          {dish.photo === "polenta" && (
-            <figcaption>
-              <a href="https://commons.wikimedia.org/wiki/File:Polenta_con_i_funghi_(49653224713).jpg">Polenta con i funghi, やましこ</a> / <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a> · WebP, уменьшено
-            </figcaption>
-          )}
-        </figure>
-      )}
+      <button className="menu-detail__close plain-action" type="button" onClick={close}>Закрыть блюдо <span aria-hidden="true">×</span></button>
+      {dish.photo && <PhotoSlot asset={photos[dish.photo]} className="menu-detail__photo" sizes="(max-width: 62rem) 88vw, 37vw" />}
       <div className="menu-detail__copy">
-        <p className="menu-detail__category">{menuCategories[dish.category]}</p>
-        <h2 id="menu-dish-title">{dish.title}</h2>
-        {dish.detail && <p className="menu-detail__description">{dish.detail}</p>}
-        {hasDetails && (
-          <dl className="menu-detail__facts">
-            {dish.ingredients !== null && <div><dt>Состав</dt><dd>{dish.ingredients.join(", ")}</dd></div>}
-            {dish.serving && <div><dt>Порция</dt><dd>{dish.serving.amount} {dish.serving.unit}</dd></div>}
-            {dish.allergens !== null && <div><dt>Аллергены</dt><dd>{dish.allergens.join(", ") || "Отсутствуют"}</dd></div>}
-          </dl>
-        )}
+        <p className="kicker">{menuCategories[dish.category]}</p>
+        <h2 id="menu-dish-title">{dishTitle(dish)}</h2>
+        <p className="menu-detail__description">{dish.description}</p>
         <div className="menu-detail__actions">
-          {(dish.priceKopecks !== null || availabilityLabels[dish.availability]) && (
-            <div className="menu-detail__status">
-              {dish.priceKopecks !== null && <p>{dishPrice(dish.priceKopecks)}</p>}
-              {availabilityLabels[dish.availability] && <p>{availabilityLabels[dish.availability]}</p>}
-            </div>
-          )}
+          <p className="menu-detail__facts"><span>{servingLabel(dish.serving)}</span><strong>{dishPrice(dish.priceKopecks)}</strong></p>
           <button
-            type="button"
-            className="menu-pill menu-pill--ink"
-            aria-pressed={quantity > 0}
-            disabled={dish.availability === "sold-out" && quantity === 0}
-            onClick={() => setMenuQuantity(dish, quantity ? 0 : 1)}
+            type="button" className="button button--ink"
+            aria-pressed={selected}
+            disabled={dish.availability === "sold-out" && !selected}
+            onClick={() => setMenuQuantity(dish, selected ? 0 : 1)}
           >
-            <span aria-hidden="true">{quantity ? "✓" : "+"}</span>
-            {quantity ? "В моём выборе" : "В мой выбор"}
+            <span aria-hidden="true">{selected ? "✓" : "+"}</span>
+            {selected ? "В моём выборе" : "В мой выбор"}
           </button>
         </div>
+        {dish.availability === "sold-out" && <p>Временно недоступно</p>}
+        {additions.length > 0 && (
+          <div className="menu-additions">
+            <h3>Добавки к омлету</h3>
+            {!selected && <p>Добавки можно выбрать вместе с омлетом.</p>}
+            <ul aria-label="Добавки к омлету">
+              {additions.map((addition) => {
+                const chosen = selection.items.some(({ id }) => id === addition.id);
+                return (
+                  <li key={addition.id}>
+                    <div><span>{addition.title}</span><small>{servingLabel(addition.serving)}</small></div>
+                    <strong>{dishPrice(addition.priceKopecks)}</strong>
+                    <button
+                      className="menu-additions__toggle" type="button" disabled={!selected}
+                      aria-pressed={chosen} aria-label={`Добавка: ${addition.title}`}
+                      onClick={() => setMenuQuantity(addition, chosen ? 0 : 1)}
+                    ><span aria-hidden="true">{chosen ? "✓" : "+"}</span></button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </article>
   );
 }
 
-function MenuSelection({ selection }: { selection: ReturnType<typeof selectionSummary> }) {
+function MenuSelection({ selection }: { selection: Selection }) {
   return (
-    <PreviewDialog title="Мой выбор" className="menu-pill menu-selection-trigger" trigger={
+    <PreviewDialog title="Мой выбор" className="button button--outline menu-selection-trigger" trigger={
       <>Мой выбор{selection.count > 0 && <span className="menu-selection-trigger__count">{selection.count}</span>}</>
     }>
       {selection.count === 0 ? (
@@ -124,34 +116,35 @@ function MenuSelection({ selection }: { selection: ReturnType<typeof selectionSu
       ) : (
         <>
           <ul className="menu-selection">
-            {selection.items.map(({ id, dish, quantity, unavailable, price, priceChanged, availabilityChanged }) => (
-              <li key={id}>
-                <div>
-                  <strong>{dish?.title ?? "Блюдо снято с меню"}</strong>
-                  {(unavailable || price !== null) && <p>{unavailable ? "Недоступно" : dishPrice(price)}</p>}
-                  {priceChanged && <p>Цена изменилась</p>}
-                  {availabilityChanged && !unavailable && <p>Наличие изменилось</p>}
-                </div>
-                <div className="menu-selection__quantity">
-                  <button
-                    type="button"
-                    aria-label={`Убрать порцию. ${dish?.title ?? "Блюдо"}`}
-                    onClick={() => dish ? setMenuQuantity(dish, quantity - 1) : removeMenuChoice(id)}
-                    disabled={!dish}
-                  >−</button>
-                  <span aria-label={`Количество порций: ${quantity}`}>{quantity}</span>
-                  <button
-                    type="button"
-                    aria-label={`Добавить порцию. ${dish?.title ?? "Блюдо"}`}
-                    onClick={() => dish && setMenuQuantity(dish, quantity + 1)}
-                    disabled={unavailable || quantity >= maximumMenuQuantity}
-                  >+</button>
-                </div>
-                <button className="menu-selection__remove" type="button" aria-label={`Убрать из выбора. ${dish?.title ?? "Блюдо"}`} onClick={() => removeMenuChoice(id)}>
-                  Убрать
-                </button>
-              </li>
-            ))}
+            {selection.items.map(({ id, dish, quantity, unavailable, price, priceChanged, availabilityChanged }) => {
+              const title = dish ? dishTitle(dish) : "Блюдо снято с меню";
+              return (
+                <li key={id}>
+                  <div>
+                    <strong>{title}</strong>
+                    {dish && "parentId" in dish && <p>Добавка к омлету</p>}
+                    {(unavailable || price !== null) && <p>{unavailable ? "Недоступно" : dishPrice(price)}</p>}
+                    {priceChanged && <p>Цена изменилась</p>}
+                    {availabilityChanged && !unavailable && <p>Наличие изменилось</p>}
+                  </div>
+                  <div className="menu-selection__quantity">
+                    <button
+                      type="button" aria-label={`Убрать порцию. ${title}`}
+                      onClick={() => dish && setMenuQuantity(dish, quantity - 1)} disabled={!dish}
+                    >−</button>
+                    <span aria-label={`Количество порций: ${quantity}`}>{quantity}</span>
+                    <button
+                      type="button" aria-label={`Добавить порцию. ${title}`}
+                      onClick={() => dish && setMenuQuantity(dish, quantity + 1)}
+                      disabled={unavailable || quantity >= maximumMenuQuantity}
+                    >+</button>
+                  </div>
+                  <button className="plain-action menu-selection__remove" type="button" aria-label={`Убрать из выбора. ${title}`} onClick={() => removeMenuChoice(id)}>
+                    Убрать
+                  </button>
+                </li>
+              );
+            })}
           </ul>
           {(selection.priced > 0 || selection.unavailable > 0) && (
             <div className="menu-selection__summary" aria-live="polite">
@@ -172,101 +165,103 @@ export function MenuBook({ kind }: { kind: MenuKind }) {
   const saved = useSyncExternalStore(subscribeMenuSelection, getMenuSelection, emptySnapshot);
   const selection = selectionSummary(saved);
   const params = new URLSearchParams(search);
-  const dishes = menuDishes.filter((dish) => dish.menus.includes(kind));
+  const dishes = dishesForMenu(kind);
   const categories = [...new Set(dishes.map((dish) => dish.category))];
   const category = categories.find((value) => value === params.get("category")) ?? "";
   const query = params.get("q") ?? "";
   const visible = filterMenuDishes(dishes, category, query);
   const requested = params.get("dish");
-  const active = requested === closedDish ? undefined : visible.find(({ id }) => id === requested) ?? (desktop ? visible[0] : undefined);
+  const initial = desktop ? visible.find((dish) => dish.photo) ?? visible[0] : undefined;
+  const active = requested === closedDish ? undefined : visible.find(({ id }) => id === requested) ?? initial;
 
   function details(dish: MenuDish) {
     return (
-      <DishDetails
-        key={dish.id}
-        dish={dish}
-        initial={desktop && !search}
-        quantity={selection.items.find(({ id }) => id === dish.id)?.quantity ?? 0}
-        close={() => {
-          updateMenuLocation({ dish: closedDish });
-          document.getElementById(`menu-row-${dish.id}`)?.focus({ preventScroll: true });
-        }}
-      />
+      <DishDetails key={dish.id} dish={dish} selection={selection} close={() => {
+        updateMenuLocation({ dish: closedDish });
+        document.getElementById(`menu-row-${dish.id}`)?.focus();
+      }} />
     );
   }
 
   return (
     <div className={`menu-view menu-view--${kind}`}>
-      <a className="menu-skip" href="#menu-title">К меню</a>
-      <header className="menu-rail">
-        <Link href={`/${book.section}`} className="menu-home"><span aria-hidden="true">←</span> На главную</Link>
-        <Link href="/" className="menu-wordmark">Вместо Кекса</Link>
-        <MenuSelection selection={selection} />
-      </header>
-      <main className="menu-book" aria-labelledby="menu-title">
-        <section className="menu-index" aria-label="Каталог блюд">
-          <nav className="menu-editions" aria-label="Разделы меню">
-            {Object.values(menuCollections).map(({ href, title }) => (
-              <Link key={href} href={href} aria-current={href === book.href ? "page" : undefined}>{title}</Link>
-            ))}
-          </nav>
-          <h1 id="menu-title" tabIndex={-1}>{book.title}</h1>
-          <div className="menu-search" role="search" aria-label="Поиск по меню">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" width="19" height="19"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.25 15.25 5 5" /></svg>
-            <input
-              type="search"
-              aria-label="Найти блюдо"
-              placeholder="Найти блюдо"
-              maxLength={120}
-              value={query}
-              onChange={(event) => updateMenuLocation({ q: event.target.value, dish: "" }, true)}
-            />
+      <SiteHeader active={book.href} />
+      <main className="layout menu-book" id="main-content" tabIndex={-1}>
+        <div className="menu-masthead">
+          <div>
+            <nav className="menu-editions" aria-label="Разделы меню">
+              {Object.values(menuCollections).map(({ href, title }) => (
+                <Link key={href} href={href} aria-current={href === book.href ? "page" : undefined}>{title === "Меню" ? "Всё меню" : title}</Link>
+              ))}
+            </nav>
+            <h1 id="menu-title">{book.title}</h1>
           </div>
-          <div className="menu-categories" role="group" aria-label="Категории блюд">
-            <button type="button" aria-pressed={!category} onClick={() => updateMenuLocation({ category: "", dish: "" })}>Все блюда</button>
-            {categories.map((value) => (
-              <button key={value} type="button" aria-pressed={category === value} onClick={() => updateMenuLocation({ category: value, dish: "" })}>{menuCategories[value]}</button>
-            ))}
-          </div>
-          {visible.length ? (
-            <ul className="menu-rows" aria-label="Блюда">
-              {visible.map((dish) => {
-                const open = active?.id === dish.id;
-                return (
-                  <li key={dish.id}>
-                    <button
-                      className="menu-row"
-                      id={`menu-row-${dish.id}`}
-                      type="button"
-                      aria-expanded={open}
-                      aria-controls={open ? dishPanelId : undefined}
-                      onClick={() => updateMenuLocation({ dish: open ? closedDish : dish.id })}
-                    >
-                      <span>{dish.title}</span>
-                      <span className="menu-row__arrow" aria-hidden="true">{open ? "−" : "+"}</span>
-                    </button>
-                    {!desktop && open && details(dish)}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="menu-empty" role="status">
-              <p>По этому запросу блюд нет.</p>
-              <button type="button" onClick={() => updateMenuLocation({ category: "", q: "", dish: "" })}>Сбросить поиск и фильтр</button>
-            </div>
-          )}
-          <PreviewDialog title="Источники" trigger="Источники" className="menu-source">
-            <p>Названия и описания блюд по данным <a href={directory.href}>{directory.name}</a>.</p>
-            <p>Фотографии из Pexels, Unsplash и Wikimedia Commons показывают примеры подачи.</p>
-          </PreviewDialog>
-        </section>
-        <div className="menu-spread">
-          {desktop && (active ? details(active) : (
-            <p className="menu-spread__empty">{visible.length ? "Выберите блюдо слева." : "Попробуйте другой запрос или категорию."}</p>
-          ))}
+          <MenuSelection selection={selection} />
         </div>
+        <div className="menu-spread">
+          <section className="menu-index" aria-label="Каталог блюд">
+            <div className="menu-search" role="search" aria-label="Поиск по меню">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" width="19" height="19"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.25 15.25 5 5" /></svg>
+              <input
+                type="search" aria-label="Найти блюдо" placeholder="Найти блюдо" maxLength={120}
+                value={query}
+                onChange={(event) => updateMenuLocation({ q: event.target.value, dish: "" }, true)}
+              />
+            </div>
+            {categories.length > 1 && (
+              <div className="menu-categories" role="group" aria-label="Категории блюд">
+                <button type="button" aria-pressed={!category} onClick={() => updateMenuLocation({ category: "", dish: "" })}>Все блюда</button>
+                {categories.map((value) => (
+                  <button key={value} type="button" aria-pressed={category === value} onClick={() => updateMenuLocation({ category: value, dish: "" })}>{menuCategories[value]}</button>
+                ))}
+              </div>
+            )}
+            {visible.length > 0 ? (
+              <div className="menu-groups">
+                {categories.map((group) => {
+                  const entries = visible.filter((dish) => dish.category === group);
+                  if (!entries.length) return null;
+                  return (
+                    <section key={group} aria-labelledby={`menu-group-${group}`}>
+                      <h2 id={`menu-group-${group}`}>{menuCategories[group]}</h2>
+                      <ul className="menu-rows" aria-label={`Блюда: ${menuCategories[group]}`}>
+                        {entries.map((dish) => {
+                          const open = active?.id === dish.id;
+                          return (
+                            <li key={dish.id}>
+                              <button
+                                className="menu-row" id={`menu-row-${dish.id}`} type="button"
+                                aria-expanded={open} aria-controls={open ? dishPanelId : undefined}
+                                onClick={() => updateMenuLocation({ dish: open ? closedDish : dish.id })}
+                              >
+                                <span className="menu-row__name">{dish.title}{dish.variant && <small>{dish.variant}</small>}</span>
+                                <span className="menu-row__weight">{servingLabel(dish.serving)}</span>
+                                <span className="menu-row__price">{dishPrice(dish.priceKopecks)}</span>
+                                <span className="menu-row__arrow" aria-hidden="true">{open ? "−" : "+"}</span>
+                              </button>
+                              {!desktop && open && details(dish)}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="menu-empty" role="status">
+                <p>По этому запросу блюд нет.</p>
+                <button className="plain-action" type="button" onClick={() => updateMenuLocation({ category: "", q: "", dish: "" })}>Сбросить поиск и фильтр</button>
+              </div>
+            )}
+          </section>
+          <aside className="menu-feature" aria-label="Подробности блюда">
+            {desktop && (active ? details(active) : <p>Выберите блюдо, чтобы посмотреть подробности.</p>)}
+          </aside>
+        </div>
+        <p className="menu-allergy">{allergyNote}</p>
       </main>
+      <SiteFooter />
     </div>
   );
 }
