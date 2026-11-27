@@ -85,10 +85,9 @@ export function BookingForm() {
   }
 
   return (
-    <div aria-label="Демонстрация бронирования" className={styles.form} role="form">
+    <div aria-label="Бронирование" className={styles.form} role="form">
       {step < 3 && (
         <>
-          <p className={styles.notice}>Демонстрационная форма. Используйте только тестовые данные.</p>
           <ol aria-label="Шаги бронирования" className={styles.steps}>
             {steps.map((label, index) => (
               <li aria-current={index === step ? "step" : undefined} data-complete={index < step} key={label}>
@@ -149,7 +148,6 @@ export function BookingForm() {
       {step === 1 && (
         <>
           <h3 className={styles.heading} ref={heading} tabIndex={-1}>Где вам будет уютнее?</h3>
-          <p className={styles.hint}>План зала пока уточняется. Можно оставить пожелание или пропустить этот шаг.</p>
           <fieldset className={styles.seats}>
             <legend>Предпочтение</legend>
             {["Тихое место", "Без предпочтений"].map((label) => (
@@ -179,7 +177,7 @@ export function BookingForm() {
             }}
             type="button"
           >
-            Подставить тестовые данные
+            Заполнить пример
           </button>
           <div className={styles.contactFields}>
             <div className={styles.field}>
@@ -244,15 +242,14 @@ export function BookingForm() {
           {renderError("consent")}
           <div className={styles.actions}>
             <button className={styles.secondary} onClick={() => goTo(1)} type="button">Назад</button>
-            <button className="button button--light" onClick={finish} type="button">Завершить демонстрацию</button>
+            <button className="button button--light" onClick={finish} type="button">Завершить</button>
           </div>
         </>
       )}
 
       {step === 3 && (
         <>
-          <h3 className={styles.heading} ref={heading} tabIndex={-1}>Демонстрация завершена</h3>
-          <p className={styles.hint}>Запрос не отправлен. В рабочей версии заявка будет ожидать подтверждения сотрудником.</p>
+          <h3 className={styles.heading} ref={heading} tabIndex={-1}>Заявка не отправлена</h3>
           <div className={styles.actions}>
             <button
               className="button button--light"

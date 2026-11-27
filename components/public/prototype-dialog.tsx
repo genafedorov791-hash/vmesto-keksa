@@ -182,7 +182,6 @@ export function AtmosphereGallery() {
         onKeyDown={handleKeys}
       >
         <PhotoSlot asset={photos[active.asset]} sizes="(max-width: 52rem) 88vw, 45rem" />
-        <p className="picture-note">Иллюстративная фотография</p>
         <div className="gallery-dialog__controls">
           <button type="button" className="text-link" onClick={() => move(-1)}>Предыдущий кадр</button>
           <span className="sr-only" role="status">{active.title}, кадр {index + 1} из {galleryFrames.length}</span>

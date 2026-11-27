@@ -39,7 +39,7 @@ export function Hero({ variant }: { variant: CoverVariant }) {
       <div className="container hero-inner">
         <div className="hero-stage grid">
           <div className="hero-title">
-            <p className="eyebrow hero-eyebrow"><span>Гастробистро</span><span>Ставрополь</span></p>
+            <p className="eyebrow hero-eyebrow"><span>Ресторан</span><span>Ставрополь</span></p>
             <h1 id="hero-title">
               {isCinema ? (
                 <>
@@ -53,7 +53,6 @@ export function Hero({ variant }: { variant: CoverVariant }) {
           </div>
           <figure className="hero-photo">
             <PhotoSlot asset={photos.hero} sizes={isCinema ? "100vw" : photos.hero.sizes} priority />
-            <figcaption>Иллюстративное фото интерьера</figcaption>
           </figure>
           <div className="hero-copy">
             <p className="hero-description">От первого кофе до ужина, за которым хочется задержаться.</p>
@@ -61,7 +60,7 @@ export function Hero({ variant }: { variant: CoverVariant }) {
               <a href="#booking" className={`button button--arrow ${actionTone}`}>
                 <span>Забронировать столик</span><ActionArrow />
               </a>
-              <a href="#menu" className={`button button--arrow button--quiet ${actionTone}`}>
+              <a href="/menu" className={`button button--arrow button--quiet ${actionTone}`}>
                 <span>Смотреть меню</span><ActionArrow />
               </a>
             </div>
@@ -69,7 +68,6 @@ export function Hero({ variant }: { variant: CoverVariant }) {
         </div>
         <div className="hero-foot">
           <a href="#contacts" className="plain-action">Ул. {directory.address}</a>
-          <span>Демонстрационная версия</span>
         </div>
       </div>
     </section>
@@ -80,7 +78,7 @@ export function MobileDock() {
   return (
     <nav className="mobile-dock" aria-label="Быстрые действия">
       <a className="mobile-dock__action" href={directory.phoneHref}>Позвонить</a>
-      <a href="#menu" className="mobile-dock__action">Меню</a>
+      <a href="/menu" className="mobile-dock__action">Меню</a>
       <a href="#booking" className="mobile-dock__action mobile-dock__booking">Бронь <ActionArrow /></a>
     </nav>
   );

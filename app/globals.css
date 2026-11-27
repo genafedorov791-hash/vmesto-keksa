@@ -218,7 +218,7 @@ section[tabindex]:focus, main[tabindex]:focus, footer[tabindex]:focus {
   text-align: center;
 }
 
-figcaption, .picture-note {
+figcaption {
   padding-block-start: 0.5rem;
   font-size: 0.75rem;
   line-height: 1.35;
@@ -307,18 +307,6 @@ figcaption, .picture-note {
 
 .intro-copy { grid-area: 1 / 1 / 2 / 8; }
 
-.intro-copy .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.intro-copy .eyebrow::before {
-  content: "";
-  width: 1.35rem;
-  border-block-start: 1px solid currentColor;
-}
-
 .intro-copy h2,
 .breakfast-copy h2,
 .booking-copy h2 { margin-block-end: 1.4rem; }
@@ -332,11 +320,6 @@ figcaption, .picture-note {
 }
 
 .intro-room .photo { aspect-ratio: 0.94; }
-
-.intro-room figcaption {
-  color: var(--earth-text);
-  text-align: end;
-}
 
 .intro-detail {
   grid-area: 2 / 4 / 3 / 7;
@@ -411,12 +394,6 @@ figcaption, .picture-note {
   font-size: clamp(2.75rem, 4.75vw, 5rem);
 }
 
-.preview-note {
-  margin-block-start: 1.1rem;
-  color: #e2cfb0;
-  font-size: 0.875rem;
-}
-
 .gastronomy-action { margin-block-start: clamp(1.25rem, 3vw, 2.8rem); }
 .gastronomy-action .button { width: min(100%, 21rem); }
 
@@ -468,17 +445,8 @@ figcaption, .picture-note {
 
 .dish-description { font-size: 0.875rem; line-height: 1.45; }
 .dish-price { margin-block-start: 0.65rem; }
-.dish-price::before {
-  content: "";
-  display: block;
-  width: 2.5rem;
-  height: 1px;
-  margin: 0 auto 0.4rem 0;
-  background: #b68953;
-}
 .dish-price, .dish-availability { color: #e2cfb0; font-size: 0.75rem; }
 .dish-item:first-child .dish-caption { text-align: center; }
-.dish-item:first-child .dish-price::before { margin-inline: auto; }
 
 @media (width > 48rem) {
   .dish-item:first-child,
@@ -586,18 +554,9 @@ figcaption, .picture-note {
   background: color-mix(in srgb, var(--sand) 75%, var(--brass));
 }
 .breakfast-photo .photo { aspect-ratio: 1.59; }
-.breakfast-photo figcaption { color: var(--earth-text); }
 
 .breakfast-copy { grid-column: 9 / -1; }
 .breakfast-copy .button { margin-block-start: 0.9rem; }
-
-.breakfast-hours {
-  margin-block-start: 0.9rem;
-  font-size: 0.9375rem;
-  font-weight: 580;
-}
-
-.breakfast-hours span { font-size: 0.8125rem; font-weight: 400; }
 
 .atmosphere {
   background-color: var(--gallery-entry);
@@ -614,7 +573,7 @@ figcaption, .picture-note {
   padding-block: clamp(2.1rem, 4.8vw, 4.2rem) clamp(1.4rem, 4.15vw, 3.2rem);
 }
 
-.atmosphere-heading :is(.eyebrow, .picture-note) { color: var(--earth-text); }
+.atmosphere-heading .eyebrow { color: var(--earth-text); }
 .atmosphere-heading em { color: var(--pine); }
 
 .atmosphere-gallery, .booking, .contacts { color: var(--milk); }
@@ -707,14 +666,6 @@ figcaption, .picture-note {
 .contacts-copy { grid-column: 1 / 7; }
 .contacts-copy h2 { max-width: 33rem; }
 .contacts-copy h2 em { display: block; }
-
-.contact-source {
-  max-width: 24rem;
-  margin-block-start: 1.45rem;
-  font-size: 0.875rem;
-}
-
-.contact-source a { text-underline-offset: 0.18em; }
 
 .contact-hours {
   display: grid;
@@ -837,7 +788,6 @@ figcaption, .picture-note {
 
 .prototype-dialog .photo img { object-fit: contain; }
 
-.prototype-dialog .picture-note { color: var(--earth-text); }
 
 .gallery-dialog { width: min(50rem, calc(100% - 2.5rem)); }
 .gallery-dialog__controls {
@@ -875,7 +825,6 @@ figcaption, .picture-note {
   }
 
   .intro-room .photo { aspect-ratio: 1.12; }
-  .intro-room figcaption { text-align: start; }
 
   .intro-detail {
     z-index: 1;

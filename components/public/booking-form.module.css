@@ -7,15 +7,10 @@
   color: var(--milk);
 }
 
-.notice,
 .hint,
 .error {
   font-size: 0.875rem;
   line-height: 1.55;
-}
-
-.notice {
-  margin: 0 0 1.3rem;
 }
 
 .steps {
