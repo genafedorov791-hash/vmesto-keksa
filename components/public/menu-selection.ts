@@ -1,4 +1,4 @@
-import { menuDishes, type Availability, type MenuDish } from "./menu-catalog";
+import { menuChoices, menuAdditions, type Availability, type MenuChoice } from "./menu-catalog";
 
 const storageKey = "vmesto-keksa:menu-selection:v1";
 const changeEvent = "vmesto-keksa:menu-selection";
@@ -55,26 +55,29 @@ function readSelection(raw: string): SavedDish[] {
   }
 }
 
-export function setMenuQuantity(dish: MenuDish, quantity: number) {
+export function setMenuQuantity(dish: MenuChoice, quantity: number) {
   if (!Number.isInteger(quantity) || quantity < 0 || quantity > maximumMenuQuantity) return;
   const items = readSelection(getMenuSelection());
   const current = items.find((item) => item.id === dish.id);
+  if (quantity > 0 && "parentId" in dish && !items.some(({ id }) => id === dish.parentId)) return;
   if (dish.availability === "sold-out" && quantity > (current?.quantity ?? 0)) return;
+  if (quantity === 0) { removeMenuChoice(dish.id); return; }
   const remaining = items.filter((item) => item.id !== dish.id);
-  if (quantity > 0) {
-    const item = { id: dish.id, quantity, priceKopecks: dish.priceKopecks, availability: dish.availability };
-    if (current) remaining.splice(items.indexOf(current), 0, item);
-    else remaining.push(item);
-  }
+  const item = { id: dish.id, quantity, priceKopecks: dish.priceKopecks, availability: dish.availability };
+  if (current) remaining.splice(items.indexOf(current), 0, item);
+  else remaining.push(item);
   writeSelection(remaining);
 }
 
-export function selectionSummary(raw: string, catalog: readonly MenuDish[] = menuDishes) {
+export function selectionSummary(raw: string, catalog: readonly MenuChoice[] = menuChoices) {
   const saved = readSelection(raw);
   const items = saved.map((choice) => {
     const dish = catalog.find(({ id }) => id === choice.id) ?? null;
     const price = dish?.priceKopecks ?? null;
-    const unavailable = !dish || dish.availability === "sold-out";
+    const parent = dish && "parentId" in dish ? catalog.find(({ id }) => id === dish.parentId) : null;
+    const missingParent = dish && "parentId" in dish && (!parent || parent.availability === "sold-out" ||
+      !saved.some(({ id }) => id === parent.id));
+    const unavailable = !dish || dish.availability === "sold-out" || !!missingParent;
     return {
       ...choice,
       dish,
@@ -101,7 +104,8 @@ export function selectionSummary(raw: string, catalog: readonly MenuDish[] = men
 }
 
 export function removeMenuChoice(id: string) {
-  writeSelection(readSelection(getMenuSelection()).filter((choice) => choice.id !== id));
+  const additions = menuAdditions.filter(({ parentId }) => parentId === id).map((addition) => addition.id);
+  writeSelection(readSelection(getMenuSelection()).filter((choice) => choice.id !== id && !additions.includes(choice.id)));
 }
 
 function writeSelection(items: readonly SavedDish[]) {

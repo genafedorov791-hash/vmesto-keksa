@@ -93,13 +93,13 @@ export function PreviewDialog({
   );
 }
 
-export function MobileNav() {
+export function MobileNav({ active, home }: { active?: string; home: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const destination = useRef<string | null>(null);
 
   function navigate(event: MouseEvent<HTMLAnchorElement>) {
-    destination.current = event.currentTarget.hash;
+    destination.current = event.currentTarget.pathname === window.location.pathname ? event.currentTarget.hash : null;
     dialog.current?.close();
   }
 
@@ -128,10 +128,10 @@ export function MobileNav() {
       <Dialog dialogRef={dialog} title="Меню сайта" className="navigation-dialog" onClose={restoreFocus}>
         <nav aria-label="Мобильная навигация">
           {sections.map(({ href, label }) => (
-            <a key={href} href={href} onClick={navigate}>{label}</a>
+            <a key={href} href={home && href.startsWith("/#") ? href.slice(1) : href} aria-current={href === active ? "page" : undefined} onClick={navigate}>{label}</a>
           ))}
         </nav>
-        <a href="#booking" className="button button--dark button--arrow" onClick={navigate}><span>Забронировать столик</span><ActionArrow /></a>
+        <a href={home ? "#booking" : "/#booking"} className="button button--ink" onClick={navigate}><span>Забронировать столик</span><ActionArrow /></a>
       </Dialog>
     </div>
   );
@@ -156,7 +156,7 @@ export function AtmosphereGallery() {
 
   return (
     <>
-      <div className="gallery-grid">
+      <div className="atmosphere-photos">
         {galleryFrames.map((frame, position) => (
           <button
             key={frame.title}
@@ -170,7 +170,7 @@ export function AtmosphereGallery() {
             }}
           >
             <PhotoSlot asset={photos[frame.asset]} />
-            <span className="gallery-item__title">{frame.title}</span>
+            <span className="sr-only">{frame.title}</span>
           </button>
         ))}
       </div>
